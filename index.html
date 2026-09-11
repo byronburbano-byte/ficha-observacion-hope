@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hope Christian Academy - Ficha Observación 2026-2027</title>
+    <!-- Tailwind + Google Fonts + Font Awesome -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <!-- XLSX -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        body {
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.15);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .glass-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 30px 50px -16px rgba(0, 0, 0, 0.2);
+        }
+        .rating-pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.3rem 0.9rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            background: #f1f5f9;
+            color: #1e293b;
+            border: 2px solid transparent;
+            transition: all 0.15s ease;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .rating-pill:hover {
+            background: #e2e8f0;
+            transform: scale(1.04);
+        }
+        .rating-pill input[type="radio"] {
+            display: none;
+        }
+        .rating-pill.active {
+            background: #0ea5e9;
+            color: white;
+            border-color: #0ea5e9;
+            box-shadow: 0 4px 8px -2px rgba(14, 165, 233, 0.4);
+        }
+        .rating-pill.active-no {
+            background: #94a3b8;
+            color: white;
+            border-color: #94a3b8;
+        }
+        .section-title i {
+            color: #0ea5e9;
+            margin-right: 0.5rem;
+        }
+        #notification {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(8px);
+            color: white;
+            padding: 0.8rem 2rem;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            box-shadow: 0 20px 40px -12px rgba(0,0,0,0.4);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        #notification.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+        .details-btn {
+            background: rgba(14, 165, 233, 0.12);
+            color: #0ea5e9;
+            font-weight: 600;
+            padding: 0.4rem 1.2rem;
+            border-radius: 40px;
+            transition: all 0.2s;
+            border: 1px solid rgba(14, 165, 233, 0.2);
+        }
+        .details-btn:hover {
+            background: #0ea5e9;
+            color: white;
+            border-color: #0ea5e9;
+            transform: scale(1.02);
+        }
+        .observation-card {
+            background: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+            border-left: 6px solid #0ea5e9;
+            transition: all 0.2s;
+        }
+        .observation-card:hover {
+            box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.08);
+            transform: translateY(-2px);
+        }
+        .badge-2027 {
+            background: linear-gradient(135deg, #f59e0b, #f97316);
+            color: white;
+            font-weight: 700;
+            padding: 0.15rem 0.8rem;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            letter-spacing: 0.5px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #0ea5e9, #3b82f6);
+            color: white;
+            font-weight: 700;
+            padding: 0.7rem 2.5rem;
+            border-radius: 60px;
+            border: none;
+            transition: all 0.2s;
+            box-shadow: 0 8px 20px -6px rgba(14, 165, 233, 0.4);
+        }
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 14px 28px -8px rgba(14, 165, 233, 0.5);
+        }
+        .btn-download {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            font-weight: 700;
+            padding: 0.7rem 2.5rem;
+            border-radius: 60px;
+            border: none;
+            transition: all 0.2s;
+            box-shadow: 0 8px 20px -6px rgba(16, 185, 129, 0.4);
+        }
+        .btn-download:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 14px 28px -8px rgba(16, 185, 129, 0.5);
+        }
+        .header-gradient {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border-bottom: 4px solid #0ea5e9;
+        }
+        .input-modern {
+            background: white;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 0.6rem 1rem;
+            transition: all 0.15s;
+        }
+        .input-modern:focus {
+            border-color: #0ea5e9;
+            box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.15);
+            outline: none;
+        }
+        select.input-modern {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+            background-position: right 0.8rem center;
+            background-repeat: no-repeat;
+            background-size: 1.2rem;
+            padding-right: 2.5rem;
+        }
+        .criteria-text {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #0f172a;
+        }
+        @media (max-width: 640px) {
+            .rating-options { gap: 0.4rem; }
+            .rating-pill { font-size: 0.75rem; padding: 0.2rem 0.6rem; }
+        }
+        .fade-in {
+            animation: fadeUp 0.6s ease forwards;
+            opacity: 0;
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in:nth-child(2) { animation-delay: 0.1s; }
+        .fade-in:nth-child(3) { animation-delay: 0.2s; }
+        .fade-in:nth-child(4) { animation-delay: 0.3s; }
+        .fade-in:nth-child(5) { animation-delay: 0.4s; }
+        .condor-icon {
+            color: #facc15;
+            font-size: 2.2rem;
+            filter: drop-shadow(0 0 6px rgba(250, 204, 21, 0.3));
+        }
+        .loading-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15,23,42,0.7);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            color: white;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .loading-overlay.show { display: flex; }
+        .spinner {
+            width: 50px; height: 50px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top-color: #0ea5e9;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <!-- Overlay de carga -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="spinner"></div>
+        <p class="font-semibold">Cargando observaciones...</p>
+    </div>
+
+    <!-- Notificación flotante -->
+    <div id="notification"><i class="fas fa-check-circle mr-2"></i><span id="notif-msg"></span></div>
+
+    <div class="container mx-auto max-w-5xl px-4">
+
+        <!-- HEADER personalizado -->
+        <header class="header-gradient text-white p-6 rounded-3xl shadow-2xl mb-10 flex flex-col md:flex-row items-center justify-between gap-4 fade-in">
+            <div class="flex items-center gap-4">
+                <div class="flex flex-col items-start">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-chess-queen text-sky-400 text-2xl"></i>
+                        <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight">
+                            Hope Christian Academy
+                        </h1>
+                        <span class="badge-2027">2026-2027</span>
+                    </div>
+                    <div class="flex items-center gap-3 mt-1 text-sm text-slate-300">
+                        <span><i class="fas fa-map-pin text-sky-400 mr-1"></i> Tabacundo</span>
+                        <span><i class="fas fa-user-tie text-sky-400 mr-1"></i> Coordinador Académico: Mr. Byron Burbano</span>
+                        <span class="hidden sm:inline"><i class="fas fa-feather-alt condor-icon ml-1"></i></span>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center gap-3 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full">
+                <i class="fas fa-calendar-alt text-sky-400"></i>
+                <span class="text-sm font-medium" id="current-date-display"></span>
+                <i class="fas fa-feather-alt condor-icon ml-2"></i>
+            </div>
+        </header>
+
+        <!-- FORMULARIO -->
+        <form id="observation-form" class="space-y-8 fade-in">
+
+            <!-- Información General -->
+            <div class="glass-card p-6 md:p-8 rounded-3xl">
+                <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2 border-b border-slate-200/60 pb-3 mb-5">
+                    <i class="fas fa-user-graduate text-sky-500 text-2xl"></i> Información General
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1"><i class="fas fa-user-edit text-sky-400 mr-1"></i> Observador</label>
+                        <select id="observador" name="observador" class="input-modern w-full">
+                            <option selected>Mr. Byron Burbano</option>
+                            <option>Ms. Marcela Orozco</option>
+                            <option>Ms. Elizabeth Iornumbe</option>
+                            <option>Mr. Francisco Polanco</option>
+                            <option>Ms. Mónica Hernández</option>
+                            <option>Ms. Dayana Vera</option>
+                            <option>Ms. Estefanía Asas</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1"><i class="fas fa-chalkboard-teacher text-sky-400 mr-1"></i> Docente observado</label>
+                        <select id="docente" name="docente" class="input-modern w-full">
+                            <option>Adán Sevillano</option><option>Alexandra Quilo</option><option>Elizabeth Iornumbe</option>
+                            <option>Alisson Burbano</option><option>Annabel Charcopa</option><option>Belén Imbaquingo</option>
+                            <option>Byron Burbano</option><option>Darwin Morales</option><option>Dayana Vera</option>
+                            <option>Dilan Quinchiguango</option><option>Estefanía Asas</option><option>Fausto Ramírez</option>
+                            <option>Francisco Polanco</option><option>Grace Montenegro</option><option>Ingrit Cabezas</option>
+                            <option>Jessica Pozo</option><option>Lady Hernández</option><option>Laura Ina</option>
+                            <option>Leslie Baraja</option><option>Marcela Orozco</option><option>Marisol Chorlango</option>
+                            <option>Mónica Hernández</option><option>Tamia Simbaña</option>
+                            <option>Tatiana Simbaña</option><option>Teresa Cevallos</option><option>Vicente Díaz</option>
+                            <option>William Pérez</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1"><i class="fas fa-calendar-day text-sky-400 mr-1"></i> Fecha</label>
+                        <input type="date" id="fecha" name="fecha" class="input-modern w-full" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1"><i class="fas fa-layer-group text-sky-400 mr-1"></i> Curso / Grado</label>
+                        <select id="curso" name="curso" class="input-modern w-full">
+                            <option>Inicial II A</option><option>Inicial II B</option><option>Primero EGB</option>
+                            <option>Segundo EGB</option><option>Tercero EGB</option><option>Cuarto EGB</option>
+                            <option>Quinto EGB</option><option>Sexto EGB</option><option>Séptimo EGB</option>
+                            <option>Octavo EGB</option><option>Noveno EGB</option><option>Décimo EGB</option>
+                            <option>Primero BGU</option><option>Segundo BGU</option><option>Tercero BGU A</option>
+                            <option>Tercero BGU B</option>
+                        </select>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-semibold text-slate-700 mb-1"><i class="fas fa-book-open text-sky-400 mr-1"></i> Materia</label>
+                        <select id="materia" name="materia" class="input-modern w-full">
+                            <option>Identity and Autonomy</option>
+                            <option>Coexistence</option>
+                            <option>Logical-Mathematical</option>
+                            <option>Oral and Written Comprehension and Expression</option>
+                            <option>Artistic Expression</option>
+                            <option>Body Expression and Motor Skills</option>
+                            <option>English</option>
+                            <option>Relations with Natural and Cultural Environment</option>
+                            <option>Language Literature</option>
+                            <option>Mathematics</option>
+                            <option>Natural Sciences</option>
+                            <option>Social Studies</option>
+                            <option>Cultural and Artistic Education</option>
+                            <option>Physical Education</option>
+                            <option>Physics</option>
+                            <option>Chemistry</option>
+                            <option>Biology</option>
+                            <option>History</option>
+                            <option>Philosophy</option>
+                            <option>Citizenship</option>
+                            <option>Psychology</option>
+                            <option>Spiritual Formation</option>
+                            <option>Biochemistry</option>
+                            <option>Marketing and Advertising</option>
+                            <option>Personal Development</option>
+                            <option>Labor Law</option>
+                            <option>Advanced Chemistry</option>
+                            <option>Administration</option>
+                        </select>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-semibold text-slate-700 mb-1"><i class="fas fa-tag text-sky-400 mr-1"></i> Tema de la clase</label>
+                        <input type="text" id="tema" name="tema" class="input-modern w-full" placeholder="Ej. Quadratic Equations" />
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-semibold text-slate-700 mb-1"><i class="fas fa-route text-sky-400 mr-1"></i> Metodología</label>
+                        <textarea id="metodologia" name="metodologia" rows="2" class="input-modern w-full" placeholder="Describe la metodología usada..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Secciones de calificación -->
+            <div id="rating-sections-container" class="space-y-6"></div>
+
+            <!-- Retroalimentación -->
+            <div class="glass-card p-6 md:p-8 rounded-3xl">
+                <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2 border-b border-slate-200/60 pb-3 mb-5">
+                    <i class="fas fa-comment-dots text-sky-500 text-2xl"></i> Retroalimentación
+                </h2>
+                <div class="grid grid-cols-1 gap-5">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1"><i class="fas fa-thumbs-up text-emerald-400 mr-1"></i> Fortalezas</label>
+                        <textarea id="fortalezas" name="fortalezas" rows="3" class="input-modern w-full" placeholder="Aspectos destacados..."></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1"><i class="fas fa-exclamation-triangle text-amber-400 mr-1"></i> Aspectos a mejorar</label>
+                        <textarea id="mejorar" name="mejorar" rows="3" class="input-modern w-full" placeholder="Puntos de oportunidad..."></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1"><i class="fas fa-lightbulb text-yellow-400 mr-1"></i> Recomendaciones</label>
+                        <textarea id="recomendaciones" name="recomendaciones" rows="3" class="input-modern w-full" placeholder="Sugerencias para la mejora..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botón Guardar -->
+            <div class="flex justify-end">
+                <button type="submit" class="btn-primary" id="submit-btn">
+                    <i class="fas fa-save mr-2"></i> Guardar Observación
+                </button>
+            </div>
+        </form>
+
+        <!-- SECCIÓN OBSERVACIONES GUARDADAS -->
+        <div id="saved-observations" class="mt-16 fade-in">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4 mb-6">
+                <h2 class="text-2xl font-extrabold text-slate-800 flex items-center gap-2">
+                    <i class="fas fa-archive text-sky-500"></i> Observaciones Guardadas
+                    <span id="count-badge" class="bg-slate-200 text-slate-700 text-sm font-bold px-3 py-0.5 rounded-full">0</span>
+                </h2>
+                <button id="download-excel-btn" class="btn-download">
+                    <i class="fas fa-file-excel mr-2"></i> Descargar Excel
+                </button>
+            </div>
+            <div id="observations-list" class="space-y-4">
+                <p class="text-center text-slate-500 py-10 bg-white/50 rounded-3xl backdrop-blur-sm border border-white/30">
+                    <i class="fas fa-inbox text-3xl block mb-2 text-slate-300"></i>
+                    Aún no hay observaciones guardadas.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         FIREBASE SDK (módulos)
+         ============================================================ -->
+    <script type="module">
+        // Importar Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // Configuración del proyecto (las credenciales que me pasaste)
+        const firebaseConfig = {
+            apiKey: "AIzaSyDcFCKQgcwCgUoG6mAb6uH7Et9ZDysLSEE",
+            authDomain: "hope-observaciones.firebaseapp.com",
+            projectId: "hope-observaciones",
+            storageBucket: "hope-observaciones.firebasestorage.app",
+            messagingSenderId: "300723487146",
+            appId: "1:300723487146:web:90aedf3edc3ce1e1042bd3",
+            measurementId: "G-D0XFSS2E0F"
+        };
+
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Autenticación anónima
+        signInAnonymously(auth).catch((error) => {
+            console.error("Error de autenticación:", error);
+        });
+
+        // Exponer funciones y objetos al ámbito global (window) para que el script normal las use
+        window.firebaseDB = db;
+        window.firebaseCollection = collection;
+        window.firebaseAddDoc = addDoc;
+        window.firebaseGetDocs = getDocs;
+        window.firebaseDeleteDoc = deleteDoc;
+        window.firebaseDoc = doc;
+        window.firebaseServerTimestamp = serverTimestamp;
+        window.firebaseQuery = query;
+        window.firebaseOrderBy = orderBy;
+        window.firebaseAuthReady = true; // Bandera para saber que está listo
+    </script>
+
+    <script>
+        // ============================================================
+        // SCRIPT PRINCIPAL DE LA APLICACIÓN
+        // ============================================================
+        (function() {
+            // --- DATOS DE SECCIONES ---
+            const ratingSections = [
+                {
+                    title: 'Proceso de Enseñanza - Aprendizaje',
+                    id: 'aprendizaje',
+                    icon: 'fa-people-arrows',
+                    criteria: [
+                        'Activa concimientos previos a partir del recurso o acticvidad enviada previamente a casa.',
+                        'Presenta el tema utilizando ejemplos reales o anecdóticos, experiencias o demostraciones.',
+                        'Fomenta la autoevaluación para afianzar los procesos de enseñanza y de aprendizaje.',
+                        'Relaciona el tema tratado con la realidad en la que viven los estudiantes (localidad, pueblo, ciudad o país).',
+                        'El desarrollo de la clase guarda concordancia con todo lo presentado en la planificación.',
+                        'Explica de forma clara las instrucciones para la realización de tareas y actividades asignadas en el PUD.',
+                        'Asigna actividades alternativas a los estudiantes que avancen más rápido.',
+                        'Promueve espacios para cuestionamientos y dudas por parte de los estudiantes; brinda explicaciones claras y oportunas a las mismas respecto al tema de la clase.',
+                        'Relaciona la vinculación bíblico curricular.',
+                        'Desarrolla en los estudiantes procesos metacognitivos (síntesis-análisis-reflexión-comparación).',
+                        'Fomenta el aprendizaje cooperativo y la comunicación en la clase.',
+                        'Utiliza recursos didácticos creativamente para captar la atención e interés durante la clase (recursos digitales, videos, diapositivas, material concreto, etc.).',
+                        'Brinda acompañamiento a los estudiantes que lo requieren.',
+                        'La cartelera contiene simultáneamente los tres elementos requeridos: Objetivo, Principio bíblico, Palabras clave en Inglés',
+                        'Utiliza comandos en inglés durante la clase (instrucciones, preguntas, etc.).'
+                    ]
+                },
+                {
+                    title: 'Al finalizar la clase',
+                    id: 'finalizar',
+                    icon: 'fa-flag-checkered',
+                    criteria: [
+                        'Aplica actividades de transferencia de clases.',
+                        'Realiza algún tipo de evaluación para conocer si los estudiantes comprendieron el tema tratado.',
+                        'Al finalizar la clase resume los puntos más importantes.',
+                        'Envía tareas a través de la plataforma Runachay y revisa las tareas asignadas.'
+                    ]
+                },
+                {
+                    title: 'Ambiente en el aula',
+                    id: 'ambiente',
+                    icon: 'fa-smile',
+                    criteria: [
+                        'Mantiene el control del grupo (disciplina).',
+                        'Trata con respeto y amabilidad a los estudiantes (les llama por sus nombres).',
+                        'Valora y motiva la participación de los estudiantes.',
+                        'Evidencia que los estudiantes cumplan con las actividades de clase.',
+                        'Muestra equilibrio entre firmeza y calidez en el trato.'
+                    ]
+                }
+            ];
+
+            // --- CONSTRUIR SECCIONES DINÁMICAMENTE ---
+            function buildRatingSections() {
+                const container = document.getElementById('rating-sections-container');
+                if (!container) return;
+                container.innerHTML = '';
+                ratingSections.forEach((section, idx) => {
+                    const div = document.createElement('div');
+                    div.className = 'glass-card p-6 md:p-8 rounded-3xl fade-in';
+                    div.style.animationDelay = (idx * 0.05) + 's';
+                    let html = `
+                        <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2 border-b border-slate-200/60 pb-3 mb-5">
+                            <i class="fas ${section.icon} text-sky-500 text-2xl"></i> ${section.title}
+                        </h2>
+                        <div class="grid grid-cols-1 gap-5">
+                    `;
+                    section.criteria.forEach((criterion, index) => {
+                        const criterionId = `${section.id}-${index}`;
+                        html += `
+                            <div class="flex flex-col md:flex-row md:items-center gap-2 md:gap-4 p-2 rounded-xl hover:bg-white/30 transition">
+                                <span class="criteria-text flex-1">${criterion}</span>
+                                <div class="rating-options flex flex-wrap gap-1 md:gap-2">
+                                    ${[0,1,2,3,4,"No evaluado"].map(val => {
+                                        const isNo = val === "No evaluado";
+                                        return `
+                                            <label class="rating-pill ${isNo ? 'rating-pill-no' : ''}" data-value="${val}">
+                                                <input type="radio" name="${criterionId}" value="${val}" />
+                                                <span>${val}</span>
+                                            </label>
+                                        `;
+                                    }).join('')}
+                                </div>
+                            </div>
+                        `;
+                    });
+                    html += `</div></div>`;
+                    div.innerHTML = html;
+                    container.appendChild(div);
+                });
+
+                // Event listeners para los pills
+                document.querySelectorAll('.rating-pill input[type="radio"]').forEach(radio => {
+                    radio.addEventListener('change', function() {
+                        const parent = this.closest('.rating-pill');
+                        const siblings = parent.parentElement.querySelectorAll('.rating-pill');
+                        siblings.forEach(p => {
+                            p.classList.remove('active', 'active-no');
+                            if (p.querySelector('input[type="radio"]').checked) {
+                                if (p.dataset.value === "No evaluado") {
+                                    p.classList.add('active-no');
+                                } else {
+                                    p.classList.add('active');
+                                }
+                            }
+                        });
+                    });
+                });
+            }
+            buildRatingSections();
+
+            // --- FECHA ACTUAL ---
+            function setInitialDate() {
+                const today = new Date();
+                const yyyy = today.getFullYear();
+                const mm = String(today.getMonth() + 1).padStart(2, '0');
+                const dd = String(today.getDate()).padStart(2, '0');
+                const dateStr = `${yyyy}-${mm}-${dd}`;
+                const fechaEl = document.getElementById('fecha');
+                if (fechaEl) fechaEl.value = dateStr;
+                const display = document.getElementById('current-date-display');
+                if (display) display.textContent = new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            }
+            setInitialDate();
+
+            // --- NOTIFICACIONES ---
+            function showNotification(msg, type = 'success') {
+                const notif = document.getElementById('notification');
+                const span = document.getElementById('notif-msg');
+                if (!notif || !span) return;
+                span.textContent = msg;
+                notif.className = 'show';
+                notif.style.background = type === 'error' ? 'rgba(220,38,38,0.9)' : 'rgba(15,23,42,0.9)';
+                clearTimeout(window.notifTimeout);
+                window.notifTimeout = setTimeout(() => notif.classList.remove('show'), 3500);
+            }
+
+            // --- NOMBRE LEGIBLE DEL CRITERIO ---
+            function getCriterionName(sectionId, criterionId) {
+                const section = ratingSections.find(sec => sec.id === sectionId);
+                if (!section) return criterionId;
+                const idx = parseInt(criterionId.split('-').pop());
+                if (section.criteria && section.criteria[idx]) {
+                    return `${section.title} - ${section.criteria[idx]}`;
+                }
+                return criterionId;
+            }
+
+            // --- OVERLAY DE CARGA ---
+            function showLoading(show) {
+                const overlay = document.getElementById('loading-overlay');
+                if (overlay) overlay.classList.toggle('show', show);
+            }
+
+            // --- GUARDAR OBSERVACIÓN (FIREBASE) ---
+            const form = document.getElementById('observation-form');
+            if (form) {
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const submitBtn = document.getElementById('submit-btn');
+                    if (submitBtn) submitBtn.disabled = true;
+
+                    try {
+                        // Recopilar ratings
+                        const ratings = {};
+                        ratingSections.forEach(section => {
+                            ratings[section.id] = {};
+                            section.criteria.forEach((_, index) => {
+                                const criterionId = `${section.id}-${index}`;
+                                const selected = form.querySelector(`input[name="${criterionId}"]:checked`);
+                                ratings[section.id][criterionId] = selected ? selected.value : 'No evaluado';
+                            });
+                        });
+
+                        // Construir objeto
+                        const obs = {
+                            observer: form.observador.value,
+                            teacher: form.docente.value,
+                            date: form.fecha.value,
+                            course: form.curso.value,
+                            subject: form.materia.value,
+                            theme: form.tema.value,
+                            methodology: form.metodologia.value,
+                            ratings: ratings,
+                            feedback: {
+                                strengths: form.fortalezas.value,
+                                improvements: form.mejorar.value,
+                                recommendations: form.recomendaciones.value
+                            },
+                            createdAt: new Date().toISOString() // Para ordenar (cliente)
+                        };
+
+                        // Guardar en Firestore
+                        await window.firebaseAddDoc(
+                            window.firebaseCollection(window.firebaseDB, "observaciones"),
+                            { ...obs, createdAtServer: window.firebaseServerTimestamp() }
+                        );
+
+                        showNotification('✅ Observación guardada en la nube');
+                        form.reset();
+                        setInitialDate();
+                        document.querySelectorAll('.rating-pill').forEach(p => p.classList.remove('active', 'active-no'));
+                        loadObservations();
+                    } catch (error) {
+                        console.error(error);
+                        showNotification('❌ Error al guardar: ' + error.message, 'error');
+                    } finally {
+                        if (submitBtn) submitBtn.disabled = false;
+                    }
+                });
+            }
+
+            // --- CARGAR OBSERVACIONES (FIREBASE) ---
+            async function loadObservations() {
+                const list = document.getElementById('observations-list');
+                const badge = document.getElementById('count-badge');
+                if (!list) return;
+
+                showLoading(true);
+                try {
+                    // Consultar Firestore ordenado por fecha
+                    const q = window.firebaseQuery(
+                        window.firebaseCollection(window.firebaseDB, "observaciones"),
+                        window.firebaseOrderBy("createdAt", "desc")
+                    );
+                    const querySnapshot = await window.firebaseGetDocs(q);
+                    const saved = [];
+                    querySnapshot.forEach((doc) => {
+                        saved.push({ id: doc.id, ...doc.data() });
+                    });
+
+                    if (badge) badge.textContent = saved.length;
+
+                    if (saved.length === 0) {
+                        list.innerHTML = `
+                            <div class="text-center py-12 bg-white/50 rounded-3xl backdrop-blur-sm border border-white/30">
+                                <i class="fas fa-inbox text-5xl block mb-3 text-slate-300"></i>
+                                <p class="text-slate-500">No hay observaciones guardadas.</p>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    list.innerHTML = '';
+                    saved.forEach(obs => {
+                        const card = document.createElement('div');
+                        card.className = 'observation-card p-5 transition-all';
+                        card.innerHTML = `
+                            <div class="flex flex-wrap items-center justify-between gap-3">
+                                <div>
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <span class="font-bold text-lg text-slate-800">${obs.teacher}</span>
+                                        <span class="text-sm bg-sky-100 text-sky-700 px-3 py-0.5 rounded-full">${obs.subject}</span>
+                                        <span class="text-sm text-slate-500">${obs.course}</span>
+                                    </div>
+                                    <div class="text-sm text-slate-500 mt-1 flex items-center gap-2 flex-wrap">
+                                        <span><i class="fas fa-user-edit mr-1"></i> Observador: ${obs.observer}</span>
+                                        <span><i class="fas fa-calendar-alt mr-1"></i> ${obs.date}</span>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button class="details-btn text-sm"><i class="fas fa-chevron-down mr-1"></i> Ver detalles</button>
+                                    <button class="delete-btn text-sm bg-red-50 text-red-500 hover:bg-red-500 hover:text-white px-4 py-2 rounded-full transition" data-id="${obs.id}">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="details-content mt-4 border-t border-slate-100 pt-4 hidden">
+                                <p><span class="font-semibold">Tema:</span> ${obs.theme || 'No especificado'}</p>
+                                <p class="mt-1"><span class="font-semibold">Metodología:</span> ${obs.methodology || 'No especificada'}</p>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-3">
+                                    <div class="bg-emerald-50 p-3 rounded-xl"><span class="font-bold text-emerald-700">Fortalezas</span><p class="text-sm mt-1">${obs.feedback?.strengths || '—'}</p></div>
+                                    <div class="bg-amber-50 p-3 rounded-xl"><span class="font-bold text-amber-700">A mejorar</span><p class="text-sm mt-1">${obs.feedback?.improvements || '—'}</p></div>
+                                    <div class="bg-blue-50 p-3 rounded-xl"><span class="font-bold text-blue-700">Recomendaciones</span><p class="text-sm mt-1">${obs.feedback?.recommendations || '—'}</p></div>
+                                </div>
+                            </div>
+                        `;
+                        list.appendChild(card);
+                    });
+                } catch (error) {
+                    console.error("Error cargando observaciones:", error);
+                    list.innerHTML = `<p class="text-center text-red-500 py-8">Error al cargar datos. Verifica tu conexión.</p>`;
+                } finally {
+                    showLoading(false);
+                }
+            }
+
+            // --- TOGGLE DETALLES ---
+            document.addEventListener('click', (e) => {
+                const btn = e.target.closest('.details-btn');
+                if (btn) {
+                    const card = btn.closest('.observation-card');
+                    const content = card.querySelector('.details-content');
+                    content.classList.toggle('hidden');
+                    btn.innerHTML = content.classList.contains('hidden') ? '<i class="fas fa-chevron-down mr-1"></i> Ver detalles' : '<i class="fas fa-chevron-up mr-1"></i> Ocultar detalles';
+                }
+
+                // --- ELIMINAR OBSERVACIÓN ---
+                const delBtn = e.target.closest('.delete-btn');
+                if (delBtn) {
+                    const id = delBtn.dataset.id;
+                    if (confirm('¿Estás seguro de eliminar esta observación? Esta acción no se puede deshacer.')) {
+                        (async () => {
+                            try {
+                                await window.firebaseDeleteDoc(window.firebaseDoc(window.firebaseDB, "observaciones", id));
+                                showNotification('🗑️ Observación eliminada');
+                                loadObservations();
+                            } catch (error) {
+                                console.error(error);
+                                showNotification('❌ Error al eliminar', 'error');
+                            }
+                        })();
+                    }
+                }
+            });
+
+            // --- EXPORTAR EXCEL ---
+            const excelBtn = document.getElementById('download-excel-btn');
+            if (excelBtn) {
+                excelBtn.addEventListener('click', async () => {
+                    try {
+                        showLoading(true);
+                        const querySnapshot = await window.firebaseGetDocs(
+                            window.firebaseCollection(window.firebaseDB, "observaciones")
+                        );
+                        const saved = [];
+                        querySnapshot.forEach((doc) => {
+                            saved.push({ id: doc.id, ...doc.data() });
+                        });
+
+                        if (saved.length === 0) {
+                            showNotification('No hay observaciones para exportar', 'error');
+                            return;
+                        }
+
+                        // Ordenar por fecha descendente
+                        saved.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+                        const data = [];
+                        saved.forEach(obs => {
+                            const row = {
+                                'Observador': obs.observer,
+                                'Docente': obs.teacher,
+                                'Fecha': obs.date,
+                                'Curso': obs.course,
+                                'Materia': obs.subject,
+                                'Tema': obs.theme,
+                                'Metodología': obs.methodology,
+                                'Fortalezas': obs.feedback?.strengths || '',
+                                'Aspectos a mejorar': obs.feedback?.improvements || '',
+                                'Recomendaciones': obs.feedback?.recommendations || ''
+                            };
+                            if (obs.ratings) {
+                                Object.keys(obs.ratings).forEach(sectionId => {
+                                    const sec = obs.ratings[sectionId];
+                                    Object.keys(sec).forEach(critId => {
+                                        const name = getCriterionName(sectionId, critId);
+                                        row[name] = sec[critId] || 'No evaluado';
+                                    });
+                                });
+                            }
+                            data.push(row);
+                        });
+
+                        const ws = XLSX.utils.json_to_sheet(data);
+                        const wb = XLSX.utils.book_new();
+                        XLSX.utils.book_append_sheet(wb, ws, 'Observaciones');
+                        if (data.length) {
+                            const cols = Object.keys(data[0]).map(key => ({
+                                wch: Math.min(Math.max(key.length, ...data.map(r => String(r[key] || '').length)), 50)
+                            }));
+                            ws['!cols'] = cols;
+                        }
+                        XLSX.writeFile(wb, `observaciones_HCA_${new Date().toISOString().slice(0,10)}.xlsx`);
+                        showNotification('✅ Excel descargado correctamente');
+                    } catch (err) {
+                        console.error(err);
+                        showNotification('❌ Error al generar Excel', 'error');
+                    } finally {
+                        showLoading(false);
+                    }
+                });
+            }
+
+            // --- INICIALIZAR ---
+            window.addEventListener('load', () => {
+                setTimeout(() => {
+                    loadObservations();
+                }, 800); // pequeña espera para que firebase esté listo
+            });
+
+            // Refrescar cada 30 segundos (opcional, para ver cambios en vivo)
+            setInterval(() => {
+                loadObservations();
+            }, 30000);
+
+        })();
+    </script>
+</body>
+</html>
