@@ -1,859 +1,734 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Hope Christian Academy - Ficha Observación 2026-2027</title>
-    <!-- Tailwind + Google Fonts + Font Awesome -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-    <!-- XLSX -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <style>
-        * { font-family: 'Inter', sans-serif; }
-        body {
-            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
-            min-height: 100vh;
-            padding: 2rem 1rem;
-        }
-        .glass-card {
-            background: rgba(255, 255, 255, 0.75);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.15);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-        .glass-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 30px 50px -16px rgba(0, 0, 0, 0.2);
-        }
-        .rating-pill {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0.3rem 0.9rem;
-            border-radius: 9999px;
-            font-weight: 600;
-            font-size: 0.85rem;
-            background: #f1f5f9;
-            color: #1e293b;
-            border: 2px solid transparent;
-            transition: all 0.15s ease;
-            cursor: pointer;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
-        .rating-pill:hover {
-            background: #e2e8f0;
-            transform: scale(1.04);
-        }
-        .rating-pill input[type="radio"] {
-            display: none;
-        }
-        .rating-pill.active {
-            background: #0ea5e9;
-            color: white;
-            border-color: #0ea5e9;
-            box-shadow: 0 4px 8px -2px rgba(14, 165, 233, 0.4);
-        }
-        .rating-pill.active-no {
-            background: #94a3b8;
-            color: white;
-            border-color: #94a3b8;
-        }
-        .section-title i {
-            color: #0ea5e9;
-            margin-right: 0.5rem;
-        }
-        #notification {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%) translateY(80px);
-            background: rgba(15, 23, 42, 0.9);
-            backdrop-filter: blur(8px);
-            color: white;
-            padding: 0.8rem 2rem;
-            border-radius: 60px;
-            font-weight: 600;
-            font-size: 0.95rem;
-            box-shadow: 0 20px 40px -12px rgba(0,0,0,0.4);
-            z-index: 999;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        #notification.show {
-            opacity: 1;
-            visibility: visible;
-            transform: translateX(-50%) translateY(0);
-        }
-        .details-btn {
-            background: rgba(14, 165, 233, 0.12);
-            color: #0ea5e9;
-            font-weight: 600;
-            padding: 0.4rem 1.2rem;
-            border-radius: 40px;
-            transition: all 0.2s;
-            border: 1px solid rgba(14, 165, 233, 0.2);
-        }
-        .details-btn:hover {
-            background: #0ea5e9;
-            color: white;
-            border-color: #0ea5e9;
-            transform: scale(1.02);
-        }
-        .observation-card {
-            background: white;
-            border-radius: 1.5rem;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
-            border-left: 6px solid #0ea5e9;
-            transition: all 0.2s;
-        }
-        .observation-card:hover {
-            box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.08);
-            transform: translateY(-2px);
-        }
-        .badge-2027 {
-            background: linear-gradient(135deg, #f59e0b, #f97316);
-            color: white;
-            font-weight: 700;
-            padding: 0.15rem 0.8rem;
-            border-radius: 40px;
-            font-size: 0.7rem;
-            letter-spacing: 0.5px;
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, #0ea5e9, #3b82f6);
-            color: white;
-            font-weight: 700;
-            padding: 0.7rem 2.5rem;
-            border-radius: 60px;
-            border: none;
-            transition: all 0.2s;
-            box-shadow: 0 8px 20px -6px rgba(14, 165, 233, 0.4);
-        }
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 14px 28px -8px rgba(14, 165, 233, 0.5);
-        }
-        .btn-download {
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
-            font-weight: 700;
-            padding: 0.7rem 2.5rem;
-            border-radius: 60px;
-            border: none;
-            transition: all 0.2s;
-            box-shadow: 0 8px 20px -6px rgba(16, 185, 129, 0.4);
-        }
-        .btn-download:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 14px 28px -8px rgba(16, 185, 129, 0.5);
-        }
-        .header-gradient {
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            border-bottom: 4px solid #0ea5e9;
-        }
-        .input-modern {
-            background: white;
-            border: 1.5px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 0.6rem 1rem;
-            transition: all 0.15s;
-        }
-        .input-modern:focus {
-            border-color: #0ea5e9;
-            box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.15);
-            outline: none;
-        }
-        select.input-modern {
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
-            background-position: right 0.8rem center;
-            background-repeat: no-repeat;
-            background-size: 1.2rem;
-            padding-right: 2.5rem;
-        }
-        .criteria-text {
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: #0f172a;
-        }
-        @media (max-width: 640px) {
-            .rating-options { gap: 0.4rem; }
-            .rating-pill { font-size: 0.75rem; padding: 0.2rem 0.6rem; }
-        }
-        .fade-in {
-            animation: fadeUp 0.6s ease forwards;
-            opacity: 0;
-        }
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .fade-in:nth-child(2) { animation-delay: 0.1s; }
-        .fade-in:nth-child(3) { animation-delay: 0.2s; }
-        .fade-in:nth-child(4) { animation-delay: 0.3s; }
-        .fade-in:nth-child(5) { animation-delay: 0.4s; }
-        .condor-icon {
-            color: #facc15;
-            font-size: 2.2rem;
-            filter: drop-shadow(0 0 6px rgba(250, 204, 21, 0.3));
-        }
-        .loading-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15,23,42,0.7);
-            backdrop-filter: blur(4px);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            color: white;
-            flex-direction: column;
-            gap: 1rem;
-        }
-        .loading-overlay.show { display: flex; }
-        .spinner {
-            width: 50px; height: 50px;
-            border: 4px solid rgba(255,255,255,0.3);
-            border-top-color: #0ea5e9;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Encuesta Hope Christian Academy</title>
+<style>
+  :root {
+    --primary: #1e3a8a; --primary-light: #3b82f6; --accent: #f59e0b;
+    --card: #ffffff; --text: #1e293b; --muted: #64748b;
+    --border: #e2e8f0; --success: #10b981; --danger: #ef4444;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+    min-height: 100vh; padding: 20px; color: var(--text);
+  }
+  .container {
+    max-width: 1100px; margin: 0 auto; background: var(--card);
+    border-radius: 18px; box-shadow: 0 20px 40px rgba(0,0,0,0.25); overflow: hidden;
+  }
+  header {
+    background: linear-gradient(135deg, #1e3a8a, #2563eb);
+    color: white; padding: 28px 30px; text-align: center;
+  }
+  header h1 { font-size: 1.5rem; margin-bottom: 6px; }
+  header p { font-size: 0.9rem; opacity: 0.9; }
+  .logo-badge {
+    display: inline-block; background: var(--accent); color: #1e293b;
+    font-weight: bold; font-size: 0.75rem; padding: 4px 12px;
+    border-radius: 20px; margin-bottom: 10px; letter-spacing: 1px;
+  }
+  form { padding: 28px 30px 34px; }
+  .field { margin-bottom: 20px; }
+  label { display: block; font-weight: 600; margin-bottom: 7px; font-size: 0.92rem; }
+  label .req { color: var(--danger); }
+  select, input[type="text"], textarea {
+    width: 100%; padding: 11px 14px; border: 2px solid var(--border);
+    border-radius: 10px; font-size: 0.95rem; font-family: inherit;
+    transition: all 0.2s; background: #f8fafc;
+  }
+  select:focus, input:focus, textarea:focus {
+    outline: none; border-color: var(--primary-light);
+    background: #fff; box-shadow: 0 0 0 4px rgba(59,130,246,0.12);
+  }
+  textarea { resize: vertical; min-height: 90px; }
+  .hint { font-size: 0.78rem; color: var(--muted); margin-top: 5px; }
+  .question {
+    background: #f8fafc; border-left: 4px solid var(--primary-light);
+    padding: 16px 18px; border-radius: 10px; margin-bottom: 18px;
+  }
+  .question p.q-text { font-weight: 600; margin-bottom: 12px; font-size: 0.93rem; line-height: 1.45; }
+  .scale { display: flex; gap: 8px; flex-wrap: wrap; }
+  .scale label {
+    flex: 1; min-width: 52px; text-align: center; border: 2px solid var(--border);
+    border-radius: 10px; padding: 10px 4px; cursor: pointer; background: #fff;
+    font-weight: 700; font-size: 1rem; transition: all 0.15s; margin: 0;
+  }
+  .scale input { display: none; }
+  .scale input:checked + span { color: white; }
+  .scale label:has(input:checked) {
+    background: var(--primary-light); border-color: var(--primary-light);
+    color: white; transform: translateY(-2px);
+  }
+  .radio-group { display: flex; gap: 10px; flex-wrap: wrap; }
+  .radio-group label {
+    display: flex; align-items: center; gap: 7px; background: #fff;
+    border: 2px solid var(--border); border-radius: 10px; padding: 10px 16px;
+    cursor: pointer; font-weight: 500; margin: 0; transition: all 0.15s;
+  }
+  .radio-group label:has(input:checked) { border-color: var(--primary-light); background: #eff6ff; }
+  .radio-group input { accent-color: var(--primary-light); }
+  .btn {
+    width: 100%; padding: 15px;
+    background: linear-gradient(135deg, #1e3a8a, #2563eb);
+    color: white; border: none; border-radius: 12px; font-size: 1.05rem;
+    font-weight: 700; cursor: pointer; transition: all 0.2s; letter-spacing: 0.5px;
+  }
+  .btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(37,99,235,0.4); }
+  .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  .thankyou { display: none; text-align: center; padding: 40px 30px; }
+  .thankyou.show { display: block; }
+  .thankyou .check {
+    width: 80px; height: 80px; background: var(--success); color: white;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 2.5rem; margin: 0 auto 20px; animation: pop 0.4s ease;
+  }
+  @keyframes pop { 0% { transform: scale(0); } 70% { transform: scale(1.15); } 100% { transform: scale(1); } }
+  .thankyou h2 { color: var(--primary); margin-bottom: 14px; }
+  .thankyou p { color: var(--muted); line-height: 1.6; margin-bottom: 10px; }
+  .blessing { font-style: italic; color: var(--primary); font-weight: 600; margin-top: 16px; }
+  .error-msg {
+    display: none; background: #fef2f2; color: var(--danger);
+    padding: 12px 16px; border-radius: 10px; margin-bottom: 16px;
+    font-size: 0.9rem; border-left: 4px solid var(--danger);
+  }
+  .error-msg.show { display: block; }
+  footer { text-align: center; font-size: 0.75rem; color: var(--muted); padding: 0 0 20px; }
+
+  .results {
+    padding: 30px;
+    border-top: 4px solid var(--primary);
+    background: #f8fafc;
+  }
+  .results h2 { color: var(--primary); margin-bottom: 6px; font-size: 1.25rem; }
+  .results p.sub { color: var(--muted); font-size: 0.88rem; margin-bottom: 16px; }
+  .toolbar {
+    display: flex; gap: 10px; flex-wrap: wrap;
+    margin: 14px 0 18px; align-items: center;
+  }
+  .btn-sm {
+    width: auto; padding: 10px 18px; font-size: 0.9rem; border-radius: 10px;
+  }
+  .btn-success { background: var(--success); }
+  .btn-success:hover:not(:disabled) { box-shadow: 0 6px 16px rgba(16,185,129,0.35); }
+  .btn-accent { background: var(--accent); color: #1e293b; }
+  .stats {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px; margin-bottom: 16px;
+  }
+  .stat {
+    background: linear-gradient(135deg, #eff6ff, #dbeafe);
+    border-left: 4px solid var(--primary-light);
+    padding: 12px 16px; border-radius: 12px;
+  }
+  .stat .num { font-size: 1.4rem; font-weight: 700; color: var(--primary); }
+  .stat .lbl { font-size: 0.75rem; color: var(--muted); }
+  .filter-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+  .filter-row select, .filter-row input {
+    padding: 8px 12px; border: 2px solid var(--border);
+    border-radius: 8px; font-size: 0.88rem;
+  }
+  .table-wrap {
+    overflow-x: auto; max-height: 60vh; overflow-y: auto;
+    border: 1px solid var(--border); border-radius: 12px; background: #fff;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+  th, td { padding: 9px 11px; text-align: left; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { background: #f8fafc; font-weight: 700; color: var(--primary); position: sticky; top: 0; z-index: 10; }
+  tr:hover td { background: #f8fafc; }
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 0.72rem; font-weight: 700; }
+  .badge-yes { background: #d1fae5; color: #065f46; }
+  .badge-no { background: #fee2e2; color: #991b1b; }
+  .badge-num { background: #dbeafe; color: #1e40af; }
+  .cell-text { max-width: 260px; white-space: pre-wrap; word-break: break-word; }
+  .empty-answer { color: #cbd5e1; font-style: italic; }
+  .loading { text-align: center; padding: 30px; color: var(--muted); }
+</style>
 </head>
 <body>
+<div class="container">
+  <header>
+    <div class="logo-badge">HOPE CHRISTIAN ACADEMY</div>
+    <h1>Encuesta de Acompañamiento Familiar</h1>
+    <p>Su opinión nos ayuda a cuidar mejor de cada estudiante y su familia</p>
+  </header>
 
-    <!-- Overlay de carga -->
-    <div id="loading-overlay" class="loading-overlay">
-        <div class="spinner"></div>
-        <p class="font-semibold">Cargando observaciones...</p>
+  <form id="surveyForm">
+    <div class="error-msg" id="errorMsg"></div>
+
+    <div class="field">
+      <label for="curso">Curso <span class="req">*</span></label>
+      <select id="curso" required><option value="">— Seleccione el curso —</option></select>
     </div>
 
-    <!-- Notificación flotante -->
-    <div id="notification"><i class="fas fa-check-circle mr-2"></i><span id="notif-msg"></span></div>
-
-    <div class="container mx-auto max-w-5xl px-4">
-
-        <!-- HEADER personalizado -->
-        <header class="header-gradient text-white p-6 rounded-3xl shadow-2xl mb-10 flex flex-col md:flex-row items-center justify-between gap-4 fade-in">
-            <div class="flex items-center gap-4">
-                <div class="flex flex-col items-start">
-                    <div class="flex items-center gap-2">
-                        <i class="fas fa-chess-queen text-sky-400 text-2xl"></i>
-                        <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight">
-                            Hope Christian Academy
-                        </h1>
-                        <span class="badge-2027">2026-2027</span>
-                    </div>
-                    <div class="flex items-center gap-3 mt-1 text-sm text-slate-300">
-                        <span><i class="fas fa-map-pin text-sky-400 mr-1"></i> Tabacundo</span>
-                        <span><i class="fas fa-user-tie text-sky-400 mr-1"></i> Coordinador Académico: Mr. Byron Burbano</span>
-                        <span class="hidden sm:inline"><i class="fas fa-feather-alt condor-icon ml-1"></i></span>
-                    </div>
-                </div>
-            </div>
-            <div class="flex items-center gap-3 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full">
-                <i class="fas fa-calendar-alt text-sky-400"></i>
-                <span class="text-sm font-medium" id="current-date-display"></span>
-                <i class="fas fa-feather-alt condor-icon ml-2"></i>
-            </div>
-        </header>
-
-        <!-- FORMULARIO -->
-        <form id="observation-form" class="space-y-8 fade-in">
-
-            <!-- Información General -->
-            <div class="glass-card p-6 md:p-8 rounded-3xl">
-                <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2 border-b border-slate-200/60 pb-3 mb-5">
-                    <i class="fas fa-user-graduate text-sky-500 text-2xl"></i> Información General
-                </h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-1"><i class="fas fa-user-edit text-sky-400 mr-1"></i> Observador</label>
-                        <select id="observador" name="observador" class="input-modern w-full">
-                            <option selected>Mr. Byron Burbano</option>
-                            <option>Ms. Marcela Orozco</option>
-                            <option>Ms. Elizabeth Iornumbe</option>
-                            <option>Mr. Francisco Polanco</option>
-                            <option>Ms. Mónica Hernández</option>
-                            <option>Ms. Dayana Vera</option>
-                            <option>Ms. Estefanía Asas</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-1"><i class="fas fa-chalkboard-teacher text-sky-400 mr-1"></i> Docente observado</label>
-                        <select id="docente" name="docente" class="input-modern w-full">
-                            <option>Adán Sevillano</option><option>Alexandra Quilo</option><option>Elizabeth Iornumbe</option>
-                            <option>Alisson Burbano</option><option>Annabel Charcopa</option><option>Belén Imbaquingo</option>
-                            <option>Byron Burbano</option><option>Darwin Morales</option><option>Dayana Vera</option>
-                            <option>Dilan Quinchiguango</option><option>Estefanía Asas</option><option>Fausto Ramírez</option>
-                            <option>Francisco Polanco</option><option>Grace Montenegro</option><option>Ingrit Cabezas</option>
-                            <option>Jessica Pozo</option><option>Gladys Sevillano</option><option>Laura Ina</option>
-                            <option>Leslie Baraja</option><option>Marcela Orozco</option><option>Marisol Chorlango</option>
-                            <option>Mónica Hernández</option><option>Tamia Simbaña</option>
-                            <option>Tatiana Simbaña</option><option>Teresa Cevallos</option><option>Vicente Díaz</option>
-                            <option>William Pérez</option><option>Ms. Nancy Maldonado</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-1"><i class="fas fa-calendar-day text-sky-400 mr-1"></i> Fecha</label>
-                        <input type="date" id="fecha" name="fecha" class="input-modern w-full" />
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-1"><i class="fas fa-layer-group text-sky-400 mr-1"></i> Curso / Grado</label>
-                        <select id="curso" name="curso" class="input-modern w-full">
-                            <option>Inicial II A</option><option>Inicial II B</option><option>Primero EGB</option>
-                            <option>Segundo EGB</option><option>Tercero EGB</option><option>Cuarto EGB</option>
-                            <option>Quinto EGB</option><option>Sexto EGB</option><option>Séptimo EGB</option>
-                            <option>Octavo EGB</option><option>Noveno EGB</option><option>Décimo EGB</option>
-                            <option>Primero BGU</option><option>Segundo BGU</option><option>Tercero BGU A</option>
-                            <option>Tercero BGU B</option>
-                        </select>
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-semibold text-slate-700 mb-1"><i class="fas fa-book-open text-sky-400 mr-1"></i> Materia</label>
-                        <select id="materia" name="materia" class="input-modern w-full">
-                            <option>Identity and Autonomy</option>
-                            <option>Coexistence</option>
-                            <option>Logical-Mathematical</option>
-                            <option>Oral and Written Comprehension and Expression</option>
-                            <option>Artistic Expression</option>
-                            <option>Body Expression and Motor Skills</option>
-                            <option>English</option>
-                            <option>Relations with Natural and Cultural Environment</option>
-                            <option>Language Literature</option>
-                            <option>Mathematics</option>
-                            <option>Natural Sciences</option>
-                            <option>Social Studies</option>
-                            <option>Cultural and Artistic Education</option>
-                            <option>Physical Education</option>
-                            <option>Physics</option>
-                            <option>Chemistry</option>
-                            <option>Biology</option>
-                            <option>History</option>
-                            <option>Philosophy</option>
-                            <option>Citizenship</option>
-                            <option>Psychology</option>
-                            <option>Spiritual Formation</option>
-                            <option>Biochemistry</option>
-                            <option>Marketing and Advertising</option>
-                            <option>Personal Development</option>
-                            <option>Labor Law</option>
-                            <option>Advanced Chemistry</option>
-                            <option>Administration</option>
-                        </select>
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-semibold text-slate-700 mb-1"><i class="fas fa-tag text-sky-400 mr-1"></i> Tema de la clase</label>
-                        <input type="text" id="tema" name="tema" class="input-modern w-full" placeholder="Ej. Quadratic Equations" />
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-semibold text-slate-700 mb-1"><i class="fas fa-route text-sky-400 mr-1"></i> Metodología</label>
-                        <textarea id="metodologia" name="metodologia" rows="2" class="input-modern w-full" placeholder="Describe la metodología usada..."></textarea>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Secciones de calificación -->
-            <div id="rating-sections-container" class="space-y-6"></div>
-
-            <!-- Retroalimentación -->
-            <div class="glass-card p-6 md:p-8 rounded-3xl">
-                <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2 border-b border-slate-200/60 pb-3 mb-5">
-                    <i class="fas fa-comment-dots text-sky-500 text-2xl"></i> Retroalimentación
-                </h2>
-                <div class="grid grid-cols-1 gap-5">
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-1"><i class="fas fa-thumbs-up text-emerald-400 mr-1"></i> Fortalezas</label>
-                        <textarea id="fortalezas" name="fortalezas" rows="3" class="input-modern w-full" placeholder="Aspectos destacados..."></textarea>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-1"><i class="fas fa-exclamation-triangle text-amber-400 mr-1"></i> Aspectos a mejorar</label>
-                        <textarea id="mejorar" name="mejorar" rows="3" class="input-modern w-full" placeholder="Puntos de oportunidad..."></textarea>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-1"><i class="fas fa-lightbulb text-yellow-400 mr-1"></i> Recomendaciones</label>
-                        <textarea id="recomendaciones" name="recomendaciones" rows="3" class="input-modern w-full" placeholder="Sugerencias para la mejora..."></textarea>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Botón Guardar -->
-            <div class="flex justify-end">
-                <button type="submit" class="btn-primary" id="submit-btn">
-                    <i class="fas fa-save mr-2"></i> Guardar Observación
-                </button>
-            </div>
-        </form>
-
-        <!-- SECCIÓN OBSERVACIONES GUARDADAS -->
-        <div id="saved-observations" class="mt-16 fade-in">
-            <div class="flex flex-col md:flex-row items-center justify-between gap-4 mb-6">
-                <h2 class="text-2xl font-extrabold text-slate-800 flex items-center gap-2">
-                    <i class="fas fa-archive text-sky-500"></i> Observaciones Guardadas
-                    <span id="count-badge" class="bg-slate-200 text-slate-700 text-sm font-bold px-3 py-0.5 rounded-full">0</span>
-                </h2>
-                <button id="download-excel-btn" class="btn-download">
-                    <i class="fas fa-file-excel mr-2"></i> Descargar Excel
-                </button>
-            </div>
-            <div id="observations-list" class="space-y-4">
-                <p class="text-center text-slate-500 py-10 bg-white/50 rounded-3xl backdrop-blur-sm border border-white/30">
-                    <i class="fas fa-inbox text-3xl block mb-2 text-slate-300"></i>
-                    Aún no hay observaciones guardadas.
-                </p>
-            </div>
-        </div>
+    <div class="field">
+      <label for="estudiante">Estudiante <span class="req">*</span></label>
+      <select id="estudiante" required disabled>
+        <option value="">— Primero seleccione un curso —</option>
+      </select>
+      <div class="hint" id="repHint"></div>
     </div>
 
-    <!-- ============================================================
-         FIREBASE SDK (módulos)
-         ============================================================ -->
-    <script type="module">
-        // Importar Firebase
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    <div class="question">
+      <p class="q-text">1. Bienestar y Percepción: "En una escala del 1 al 5, donde 5 es excelente, ¿cómo se siente su hijo(a) y su familia con la experiencia vivida en la academia hasta el momento?" <span class="req">*</span></p>
+      <div class="scale">
+        <label><input type="radio" name="p1" value="1" required><span>1</span></label>
+        <label><input type="radio" name="p1" value="2"><span>2</span></label>
+        <label><input type="radio" name="p1" value="3"><span>3</span></label>
+        <label><input type="radio" name="p1" value="4"><span>4</span></label>
+        <label><input type="radio" name="p1" value="5"><span>5</span></label>
+      </div>
+    </div>
 
-        // Configuración del proyecto (las credenciales que me pasaste)
-        const firebaseConfig = {
-            apiKey: "AIzaSyDcFCKQgcwCgUoG6mAb6uH7Et9ZDysLSEE",
-            authDomain: "hope-observaciones.firebaseapp.com",
-            projectId: "hope-observaciones",
-            storageBucket: "hope-observaciones.firebasestorage.app",
-            messagingSenderId: "300723487146",
-            appId: "1:300723487146:web:90aedf3edc3ce1e1042bd3",
-            measurementId: "G-D0XFSS2E0F"
-        };
+    <div class="question">
+      <p class="q-text">2. Atención e interés genuino: "¿Siente que la institución escucha sus inquietudes a tiempo y brinda un ambiente seguro, cercano y de cuidado para su representado?" <span class="req">*</span></p>
+      <div class="radio-group">
+        <label><input type="radio" name="p2" value="Sí" required> Sí</label>
+        <label><input type="radio" name="p2" value="No"> No</label>
+      </div>
+      <div style="margin-top:12px;">
+        <label for="p2_sugerencia" style="font-weight:500; font-size:0.85rem;">Sugerencia rápida (opcional):</label>
+        <textarea id="p2_sugerencia" placeholder="Escriba aquí su sugerencia..."></textarea>
+      </div>
+    </div>
 
-        // Inicializar Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+    <div class="question">
+      <p class="q-text">3. Oferta directa de ayuda: "¿Existe algún aspecto específico académico, emocional, comportamental o familiar en el que podamos brindarle ayuda o acompañamiento especial a su hijo(a) en este momento?"</p>
+      <textarea id="p3" placeholder="Describa aquí si requiere algún apoyo especial..."></textarea>
+    </div>
 
-        // Autenticación anónima
-        signInAnonymously(auth).catch((error) => {
-            console.error("Error de autenticación:", error);
-        });
+    <button type="submit" class="btn" id="submitBtn">Enviar Encuesta</button>
+    <footer style="margin-top:16px;">Sus respuestas quedarán registradas para dar seguimiento.</footer>
+  </form>
 
-        // Exponer funciones y objetos al ámbito global (window) para que el script normal las use
-        window.firebaseDB = db;
-        window.firebaseCollection = collection;
-        window.firebaseAddDoc = addDoc;
-        window.firebaseGetDocs = getDocs;
-        window.firebaseDeleteDoc = deleteDoc;
-        window.firebaseDoc = doc;
-        window.firebaseServerTimestamp = serverTimestamp;
-        window.firebaseQuery = query;
-        window.firebaseOrderBy = orderBy;
-        window.firebaseAuthReady = true; // Bandera para saber que está listo
-    </script>
+  <div class="thankyou" id="thankyou">
+    <div class="check">✓</div>
+    <h2>¡Muchísimas gracias por su tiempo!</h2>
+    <p>Por compartir su valiosa opinión.</p>
+    <p>En <strong>Hope Christian Academy</strong> nuestra prioridad no es solo la formación académica, sino cuidar de cada una de nuestras familias.</p>
+    <p>Estaremos atentos a sus comentarios.</p>
+    <p class="blessing">¡Que Dios bendiga su hogar!</p>
+    <button class="btn" style="margin-top:24px; max-width:260px;" onclick="resetForm()">Responder otra encuesta</button>
+  </div>
 
-    <script>
-        // ============================================================
-        // SCRIPT PRINCIPAL DE LA APLICACIÓN
-        // ============================================================
-        (function() {
-            // --- DATOS DE SECCIONES ---
-            const ratingSections = [
-                {
-                    title: 'Proceso de Enseñanza - Aprendizaje',
-                    id: 'aprendizaje',
-                    icon: 'fa-people-arrows',
-                    criteria: [
-                        'Activa concimientos previos a partir del recurso o acticvidad enviada previamente a casa.',
-                        'Presenta el tema utilizando ejemplos reales o anecdóticos, experiencias o demostraciones.',
-                        'Fomenta la autoevaluación para afianzar los procesos de enseñanza y de aprendizaje.',
-                        'Relaciona el tema tratado con la realidad en la que viven los estudiantes (localidad, pueblo, ciudad o país).',
-                        'El desarrollo de la clase guarda concordancia con todo lo presentado en la planificación.',
-                        'Explica de forma clara las instrucciones para la realización de tareas y actividades asignadas en el PUD.',
-                        'Asigna actividades alternativas a los estudiantes que avancen más rápido.',
-                        'Promueve espacios para cuestionamientos y dudas por parte de los estudiantes; brinda explicaciones claras y oportunas a las mismas respecto al tema de la clase.',
-                        'Relaciona la vinculación bíblico curricular.',
-                        'Desarrolla en los estudiantes procesos metacognitivos (síntesis-análisis-reflexión-comparación).',
-                        'Fomenta el aprendizaje cooperativo y la comunicación en la clase.',
-                        'Utiliza recursos didácticos creativamente para captar la atención e interés durante la clase (recursos digitales, videos, diapositivas, material concreto, etc.).',
-                        'Brinda acompañamiento a los estudiantes que lo requieren.',
-                        'La cartelera contiene simultáneamente los tres elementos requeridos: Objetivo, Principio bíblico, Palabras clave en Inglés',
-                        'Utiliza comandos en inglés durante la clase (instrucciones, preguntas, etc.).'
-                    ]
-                },
-                {
-                    title: 'Al finalizar la clase',
-                    id: 'finalizar',
-                    icon: 'fa-flag-checkered',
-                    criteria: [
-                        'Aplica actividades de transferencia de clases.',
-                        'Realiza algún tipo de evaluación para conocer si los estudiantes comprendieron el tema tratado.',
-                        'Al finalizar la clase resume los puntos más importantes.',
-                        'Envía tareas a través de la plataforma Runachay y revisa las tareas asignadas.'
-                    ]
-                },
-                {
-                    title: 'Ambiente en el aula',
-                    id: 'ambiente',
-                    icon: 'fa-smile',
-                    criteria: [
-                        'Mantiene el control del grupo (disciplina).',
-                        'Trata con respeto y amabilidad a los estudiantes (les llama por sus nombres).',
-                        'Valora y motiva la participación de los estudiantes.',
-                        'Evidencia que los estudiantes cumplan con las actividades de clase.',
-                        'Muestra equilibrio entre firmeza y calidez en el trato.'
-                    ]
-                }
-            ];
+  <div class="results">
+    <h2>📊 Respuestas registradas</h2>
+    <p class="sub">Todas las encuestas enviadas hasta el momento. Se actualizan al hacer clic en "Refrescar".</p>
 
-            // --- CONSTRUIR SECCIONES DINÁMICAMENTE ---
-            function buildRatingSections() {
-                const container = document.getElementById('rating-sections-container');
-                if (!container) return;
-                container.innerHTML = '';
-                ratingSections.forEach((section, idx) => {
-                    const div = document.createElement('div');
-                    div.className = 'glass-card p-6 md:p-8 rounded-3xl fade-in';
-                    div.style.animationDelay = (idx * 0.05) + 's';
-                    let html = `
-                        <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2 border-b border-slate-200/60 pb-3 mb-5">
-                            <i class="fas ${section.icon} text-sky-500 text-2xl"></i> ${section.title}
-                        </h2>
-                        <div class="grid grid-cols-1 gap-5">
-                    `;
-                    section.criteria.forEach((criterion, index) => {
-                        const criterionId = `${section.id}-${index}`;
-                        html += `
-                            <div class="flex flex-col md:flex-row md:items-center gap-2 md:gap-4 p-2 rounded-xl hover:bg-white/30 transition">
-                                <span class="criteria-text flex-1">${criterion}</span>
-                                <div class="rating-options flex flex-wrap gap-1 md:gap-2">
-                                    ${[0,1,2,3,4,"No evaluado"].map(val => {
-                                        const isNo = val === "No evaluado";
-                                        return `
-                                            <label class="rating-pill ${isNo ? 'rating-pill-no' : ''}" data-value="${val}">
-                                                <input type="radio" name="${criterionId}" value="${val}" />
-                                                <span>${val}</span>
-                                            </label>
-                                        `;
-                                    }).join('')}
-                                </div>
-                            </div>
-                        `;
-                    });
-                    html += `</div></div>`;
-                    div.innerHTML = html;
-                    container.appendChild(div);
-                });
+    <div class="stats" id="stats"></div>
 
-                // Event listeners para los pills
-                document.querySelectorAll('.rating-pill input[type="radio"]').forEach(radio => {
-                    radio.addEventListener('change', function() {
-                        const parent = this.closest('.rating-pill');
-                        const siblings = parent.parentElement.querySelectorAll('.rating-pill');
-                        siblings.forEach(p => {
-                            p.classList.remove('active', 'active-no');
-                            if (p.querySelector('input[type="radio"]').checked) {
-                                if (p.dataset.value === "No evaluado") {
-                                    p.classList.add('active-no');
-                                } else {
-                                    p.classList.add('active');
-                                }
-                            }
-                        });
-                    });
-                });
-            }
-            buildRatingSections();
+    <div class="toolbar">
+      <button class="btn btn-sm btn-success" onclick="descargarExcel()">⬇️ Descargar Excel</button>
+      <button class="btn btn-sm btn-accent" onclick="cargarDatos()">🔄 Refrescar</button>
+    </div>
 
-            // --- FECHA ACTUAL ---
-            function setInitialDate() {
-                const today = new Date();
-                const yyyy = today.getFullYear();
-                const mm = String(today.getMonth() + 1).padStart(2, '0');
-                const dd = String(today.getDate()).padStart(2, '0');
-                const dateStr = `${yyyy}-${mm}-${dd}`;
-                const fechaEl = document.getElementById('fecha');
-                if (fechaEl) fechaEl.value = dateStr;
-                const display = document.getElementById('current-date-display');
-                if (display) display.textContent = new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-            }
-            setInitialDate();
+    <div class="filter-row">
+      <select id="filtroCurso" onchange="renderTabla()">
+        <option value="">Todos los cursos</option>
+      </select>
+      <input type="text" id="filtroTexto" placeholder="Buscar estudiante o representante..." oninput="renderTabla()" />
+    </div>
 
-            // --- NOTIFICACIONES ---
-            function showNotification(msg, type = 'success') {
-                const notif = document.getElementById('notification');
-                const span = document.getElementById('notif-msg');
-                if (!notif || !span) return;
-                span.textContent = msg;
-                notif.className = 'show';
-                notif.style.background = type === 'error' ? 'rgba(220,38,38,0.9)' : 'rgba(15,23,42,0.9)';
-                clearTimeout(window.notifTimeout);
-                window.notifTimeout = setTimeout(() => notif.classList.remove('show'), 3500);
-            }
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th><th>Curso</th><th>Estudiante</th><th>Representante</th><th>Correo</th>
+            <th>P1</th><th>P2</th><th>Sugerencia P2</th><th>P3 — Ayuda</th><th>Fecha</th>
+          </tr>
+        </thead>
+        <tbody id="tbody">
+          <tr><td colspan="10" class="loading">Cargando datos...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
 
-            // --- NOMBRE LEGIBLE DEL CRITERIO ---
-            function getCriterionName(sectionId, criterionId) {
-                const section = ratingSections.find(sec => sec.id === sectionId);
-                if (!section) return criterionId;
-                const idx = parseInt(criterionId.split('-').pop());
-                if (section.criteria && section.criteria[idx]) {
-                    return `${section.title} - ${section.criteria[idx]}`;
-                }
-                return criterionId;
-            }
+<!-- Firebase + SheetJS -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
-            // --- OVERLAY DE CARGA ---
-            function showLoading(show) {
-                const overlay = document.getElementById('loading-overlay');
-                if (overlay) overlay.classList.toggle('show', show);
-            }
+<script>
+/* ============================================================
+   1) CONFIGURACIÓN FIREBASE — TUS DATOS REALES
+   ============================================================ */
+const firebaseConfig = {
+  apiKey: "AIzaSyCkh1AkBmRTkZ8UgBXtm8gTi9K61a3iBIs",
+  authDomain: "hope-academy-encuestas.firebaseapp.com",
+  projectId: "hope-academy-encuestas",
+  storageBucket: "hope-academy-encuestas.firebasestorage.app",
+  messagingSenderId: "534879933234",
+  appId: "1:534879933234:web:cfe679f006abac2dfefd2b"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
-            // --- GUARDAR OBSERVACIÓN (FIREBASE) ---
-            const form = document.getElementById('observation-form');
-            if (form) {
-                form.addEventListener('submit', async (e) => {
-                    e.preventDefault();
-                    const submitBtn = document.getElementById('submit-btn');
-                    if (submitBtn) submitBtn.disabled = true;
+/* ============================================================
+   2) ORDEN PEDAGÓGICO DE CURSOS
+   ============================================================ */
+const ORDEN_CURSOS = [
+  "INICIAL II A - Inicial","INICIAL II B - Inicial","Primer Grado A - Preparatoria",
+  "Segundo Grado EGB","Tercer Grado EGB","Cuarto Grado EGB","Quinto Grado EGB",
+  "Sexto Grado EGB","Séptimo Grado EGB","Octavo Grado EGB","Noveno Grado EGB",
+  "Décimo Grado EGB","Primer Curso A - Bachillerato","Segundo Curso A - Bachillerato",
+  "Tercer Curso A - Bachillerato"
+];
 
-                    try {
-                        // Recopilar ratings
-                        const ratings = {};
-                        ratingSections.forEach(section => {
-                            ratings[section.id] = {};
-                            section.criteria.forEach((_, index) => {
-                                const criterionId = `${section.id}-${index}`;
-                                const selected = form.querySelector(`input[name="${criterionId}"]:checked`);
-                                ratings[section.id][criterionId] = selected ? selected.value : 'No evaluado';
-                            });
-                        });
+/* ============================================================
+   3) LISTA DE ESTUDIANTES
+   ============================================================ */
+const estudiantes = [
+  {curso:"INICIAL II A - Inicial", email:"ian.guevara@hopeacademy.edu.ec", representante:"ELIANA ARACELY", estudiante:"IAN STEPHEN GUEVARA ALVEAR"},
+  {curso:"INICIAL II A - Inicial", email:"isabella.marcalla@hopeacademy.edu.ec", representante:"AMPARO LILIANA", estudiante:"ISABELLA MARCALLA LUGMAÑA"},
+  {curso:"INICIAL II A - Inicial", email:"leah.molineros@hopeacademy.edu.ec", representante:"Pamela Belen", estudiante:"Leah Belen Molineros Verdesoto"},
+  {curso:"INICIAL II A - Inicial", email:"matheo.tupiza@hopeacademy.edu.ec", representante:"WILLIAM ROBERTO", estudiante:"MATHEO WILLIAMS TUPIZA CANTUÑA"},
+  {curso:"INICIAL II B - Inicial", email:"farrell.araque@hopeacademy.edu.ec", representante:"Yvelice Gertrudis", estudiante:"Farrell Ignacio Araque Honores"},
+  {curso:"INICIAL II B - Inicial", email:"aitana.cortes@hopeacademy.edu.ec", representante:"JUSTIN KEITH", estudiante:"AITANA ELEODORITA CORTES GARCIA"},
+  {curso:"INICIAL II B - Inicial", email:"luciano.marroquin@hopeacademy.edu.ec", representante:"SEGUNDO JULIÁN", estudiante:"LUCIANO EMMANUEL MARROQUIN SIMBAÑA"},
+  {curso:"INICIAL II B - Inicial", email:"paula.morocho@hopeacademy.edu.ec", representante:"", estudiante:"Paul Morocho"},
+  {curso:"INICIAL II B - Inicial", email:"danna.murcia@hopeacademy.edu.ec", representante:"KATIUSKA KATHERINE", estudiante:"DANNA EVANGELINE MURCIA CEDEÑO"},
+  {curso:"INICIAL II B - Inicial", email:"mateo.paez@hopeacademy.edu.ec", representante:"VIVIANA ESTEFANIA", estudiante:"MATEO DAVID PAEZ CORNEJO"},
+  {curso:"INICIAL II B - Inicial", email:"brisa.papa@hopeacademy.edu.ec", representante:"Jauna", estudiante:"BRISA JESSICA PAPA DAGUAY"},
+  {curso:"INICIAL II B - Inicial", email:"juan.pinango@hopeacademy.edu.ec", representante:"ZOILA MERCEDES", estudiante:"JUAN MARTÍN PINANGO IMBA"},
+  {curso:"INICIAL II B - Inicial", email:"amir.polanco@hopeacademy.edu.ec", representante:"FRANCISCO JAVIER", estudiante:"AMIR POLANCO HERNÁNDEZ"},
+  {curso:"INICIAL II B - Inicial", email:"martina.robalino@hopeacademy.edu.ec", representante:"Ruth Noemi", estudiante:"MARTINA IVETTE ROBALINO CARLOSAMA"},
+  {curso:"INICIAL II B - Inicial", email:"luz.tene@hopeacademy.edu.ec", representante:"JUSTIN KEITH", estudiante:"LUZ ALEJANDRA TENE BAÑO"},
+  {curso:"Primer Grado A - Preparatoria", email:"mateo.franco@hopeacademy.edu.ec", representante:"", estudiante:"MATEO JOSUÈ FRANCO MOLINA"},
+  {curso:"Primer Grado A - Preparatoria", email:"danna.arcos@hopeacademy.edu.ec", representante:"GLADYS KARINA", estudiante:"DANNA VICTORIA ARCOS ARMERO"},
+  {curso:"Primer Grado A - Preparatoria", email:"aviles.gael@hopeacademy.edu.ec", representante:"JUSTIN KEITH", estudiante:"AVILES TAPUY GAEL AZAD"},
+  {curso:"Primer Grado A - Preparatoria", email:"luisa.bello@hopeacademy.edu.ec", representante:"Nancy Beatríz", estudiante:"Luisa Fernanda Bello Rodas"},
+  {curso:"Primer Grado A - Preparatoria", email:"lía.benavides@hopeacademy.edu.ec", representante:"EVELYN MARIA", estudiante:"Lía Antonella Benavides Alvear"},
+  {curso:"Primer Grado A - Preparatoria", email:"natasha.chavez@hopeacademy.edu.ec", representante:"Edwin Julián", estudiante:"Natasha Antonella Chavez Valencia"},
+  {curso:"Primer Grado A - Preparatoria", email:"victoria.morocho@hopeacademy.edu.ec", representante:"PIEDAD BEATRIZ", estudiante:"VICTORIA ANAHÍ MOROCHO CAMPUES"},
+  {curso:"Primer Grado A - Preparatoria", email:"gennesis.paillacho@hopeacademy.edu.ec", representante:"Rocío", estudiante:"GENNESIS FERNANDA PAILLACHO MOLINA"},
+  {curso:"Primer Grado A - Preparatoria", email:"paul.toapanta@hopeacademy.edu.ec", representante:"VICENTE", estudiante:"PAUL ALEJANDRO TOAPANTA GARCÍA"},
+  {curso:"Primer Grado A - Preparatoria", email:"lucy.wiakach@hopeacademy.edu.ec", representante:"GLADYS KARINA", estudiante:"LUCY WENDY WIAKACH SHARIAN"},
+  {curso:"Segundo Grado EGB", email:"mauricio.arias@hopeacademy.edu.ec", representante:"CORAIMA MARIUXI", estudiante:"MAURICIO MIGUEL ARIAS LOMBANO"},
+  {curso:"Segundo Grado EGB", email:"rachell.flores@hopeacademy.edu.ec", representante:"Mayra Alexandra", estudiante:"Rachell Belén Flores Conlago"},
+  {curso:"Segundo Grado EGB", email:"elian.gordon@hopeacademy.edu.ec", representante:"JENNY ELIZABETH", estudiante:"ELIAN ADAN GORDON ANDRANGO"},
+  {curso:"Segundo Grado EGB", email:"eipriel.imbago@hopeacademy.edu.ec", representante:"", estudiante:"EIPRIEL JUDITH IMBAGO LANCHIMBA"},
+  {curso:"Segundo Grado EGB", email:"arlet.maldonado@hopeacademy.edu.ec", representante:"", estudiante:"ARLET NOHEMI MALDONADO GUAMAN"},
+  {curso:"Segundo Grado EGB", email:"ezequiel.quishpe@hopeacademy.edu.ec", representante:"CARINA MARUJA", estudiante:"EZEQUIEL BENJAMÍN QUISHPE QUISHPE"},
+  {curso:"Segundo Grado EGB", email:"isabella.saenz@hopeacademy.edu.ec", representante:"Carlos Alberto", estudiante:"ISABELLA SAENZ OLMEDO"},
+  {curso:"Segundo Grado EGB", email:"sol.tipan@hopeacademy.edu.ec", representante:"Jenny Marianela", estudiante:"Sol Arawi Tipan Guaján"},
+  {curso:"Segundo Grado EGB", email:"edgar.torres@hopeacademy.edu.ec", representante:"EDGAR ISAAC", estudiante:"EDGAR ELIAS TORRES REINA"},
+  {curso:"Segundo Grado EGB", email:"jordy.wiakach@hopeacademy.edu.ec", representante:"GLADYS KARINA", estudiante:"JORDY GUIDO WIAKACH SHARIAN"},
+  {curso:"Segundo Grado EGB", email:"samuel.zambrano@hopeacademy.edu.ec", representante:"JULIO JAVIER", estudiante:"SAMUEL ANTONIO ZAMBRANO VACA"},
+  {curso:"Tercer Grado EGB", email:"mila.corozo@hopeacademy.edu.ec", representante:"ANGEL DANIEL", estudiante:"MILA SOFIA COROZO CUZCO"},
+  {curso:"Tercer Grado EGB", email:"lucas.cortes@hopeacademy.edu.ec", representante:"GLADYS KARINA", estudiante:"LUCAS MOAD CORTES GARCIA"},
+  {curso:"Tercer Grado EGB", email:"paula.guerrero@hopeacademy.edu.ec", representante:"JORGE FERNANDO", estudiante:"Paula Aitana Guerrero Mejía"},
+  {curso:"Tercer Grado EGB", email:"taylor.molina@hopeacademy.edu.ec", representante:"VINICIO ALEJANDRO", estudiante:"Taylor Matias Molina López"},
+  {curso:"Tercer Grado EGB", email:"adif.polanco@hopeacademy.edu.ec", representante:"FRANCISCO JAVIER", estudiante:"ADIF POLANCO HERNÁNDEZ"},
+  {curso:"Tercer Grado EGB", email:"tomas.simbana@hopeacademy.edu.ec", representante:"DIANA MARIBEL", estudiante:"TOMaS ISAÍAS SIMBANA CUALCHI"},
+  {curso:"Tercer Grado EGB", email:"xue.yang@hopeacademy.edu.ec", representante:"YAN", estudiante:"XUE YING YANG YANG"},
+  {curso:"Cuarto Grado EGB", email:"emiliano.arebalo@hopeacademy.edu.ec", representante:"FERNANDO SEBASTIAN", estudiante:"EMILIANO SEBASTIÁN AREBALO PAEZ"},
+  {curso:"Cuarto Grado EGB", email:"carlos.aviles@hopeacademy.edu.ec", representante:"JUSTIN KEITH", estudiante:"CARLOS EFRAIN AVILES TAPUY"},
+  {curso:"Cuarto Grado EGB", email:"gael.cabascango@hopeacademy.edu.ec", representante:"LUIS PATRICIO", estudiante:"GAEL PATRICIO CABASCANGO CUASCOTA"},
+  {curso:"Cuarto Grado EGB", email:"danahe.fernandez@hopeacademy.edu.ec", representante:"ALEX JUAN", estudiante:"DANAHE NICKOL FERNANDEZ COBACANGO"},
+  {curso:"Cuarto Grado EGB", email:"rosalia.guerra@hopeacademy.edu.ec", representante:"GLADYS KARINA", estudiante:"ROSALIA ISABEL GUERRA DIAZ"},
+  {curso:"Cuarto Grado EGB", email:"paula.marroquin@hopeacademy.edu.ec", representante:"MELANI MELISSA", estudiante:"PAULA DANAE MARROQUIN PEÑAFIEL"},
+  {curso:"Cuarto Grado EGB", email:"alejandro.mendez@hopeacademy.edu.ec", representante:"Daira Fernanda", estudiante:"ALEJANDRO JOSUE MENDEZ JARAMILLO"},
+  {curso:"Cuarto Grado EGB", email:"airis.ramos@hopeacademy.edu.ec", representante:"Vivíana Elizabeth", estudiante:"AIRIS ELIANA RAMOS CHAVEZ"},
+  {curso:"Cuarto Grado EGB", email:"luciana.rivera@hopeacademy.edu.ec", representante:"WILSON RICARDO", estudiante:"LUCIANA ANTONELLA RIVERA MURILLO"},
+  {curso:"Cuarto Grado EGB", email:"leah.toapanta@hopeacademy.edu.ec", representante:"MARÍA INÉS", estudiante:"LEAH SARAHI TOAPANTA INLAGO"},
+  {curso:"Quinto Grado EGB", email:"amira.carrera@hopeacademy.edu.ec", representante:"SILVANA MISHELL", estudiante:"AMIRA VICTORIA CARRERA TORRES"},
+  {curso:"Quinto Grado EGB", email:"mayer.aviles@hopeacademy.edu.ec", representante:"", estudiante:"MAYER GILMAR AVILES TAPUY"},
+  {curso:"Quinto Grado EGB", email:"enrique.castro@hopeacademy.edu.ec", representante:"Lizbeth Tamia", estudiante:"ENRIQUE DAVID CASTRO SIMBAÑA"},
+  {curso:"Quinto Grado EGB", email:"isaac.egas@hopeacademy.edu.ec", representante:"Maria Cristina", estudiante:"Isaac Sebastian Egas Teran"},
+  {curso:"Quinto Grado EGB", email:"elian.pinango@hopeacademy.edu.ec", representante:"ZOILA MERCEDES", estudiante:"ELIAN MATIAS  PINANGO IMBA"},
+  {curso:"Quinto Grado EGB", email:"paula.flores@hopeacademy.edu.ec", representante:"IVONNE NATHALY", estudiante:"PAULA MONSERRATH FLORES TULCANAZA"},
+  {curso:"Quinto Grado EGB", email:"manuela.guerrero@hopeacademy.edu.ec", representante:"Fernanda Araceli", estudiante:"Manuela Fernanda Guerrero Mejia"},
+  {curso:"Quinto Grado EGB", email:"gabriel.landeta@hopeacademy.edu.ec", representante:"MARICELA DEL CARMEN", estudiante:"GABRIEL ALFONSO LANDETA NARANJO"},
+  {curso:"Quinto Grado EGB", email:"mateo.paillacho@hopeacademy.edu.ec", representante:"Rocío", estudiante:"MATEO DAVID PAILLACHO MOLINA"},
+  {curso:"Quinto Grado EGB", email:"natasha.puga@hopeacademy.edu.ec", representante:"JUAN PLUTARCO", estudiante:"NATASHA RAFAELA PUGA SANCHEZ"},
+  {curso:"Quinto Grado EGB", email:"jhoan.quimbiamba@hopeacademy.edu.ec", representante:"LUIS HERNAN", estudiante:"JHOAN CRISTOPHER QUIMBIAMBA CHICAIZA"},
+  {curso:"Quinto Grado EGB", email:"angel.quishpe@hopeacademy.edu.ec", representante:"JAQUELINE CAMPUES", estudiante:"ANGEL DAVID QUISHPE CAMPUES"},
+  {curso:"Quinto Grado EGB", email:"luis.salazar@hopeacademy.edu.ec", representante:"Patricia Elizabeth", estudiante:"Luis Sebastian Salazar Ayala"},
+  {curso:"Quinto Grado EGB", email:"aisha.sevillano@hopeacademy.edu.ec", representante:"GLADYS KARINA", estudiante:"AISHA THALIA SEVILLANO CABEZAS"},
+  {curso:"Quinto Grado EGB", email:"fiorella.velastegui@hopeacademy.edu.ec", representante:"Johana Elizabeth", estudiante:"Fiorella Sofía Velastegui Villarreal"},
+  {curso:"Sexto Grado EGB", email:"elissa.abston@hopeacademy.edu.ec", representante:"Andrea Belen", estudiante:"Elissa Kaye Abston silva"},
+  {curso:"Sexto Grado EGB", email:"jacob.campués@hopeacademy.edu.ec", representante:"Edwin Patricio", estudiante:"Jacob Isaac Campués Cabascango"},
+  {curso:"Sexto Grado EGB", email:"ehitan.farinango@hopeacademy.edu.ec", representante:"Fernanda Emperatriz", estudiante:"EHITAN ANDRÉS FARINANGO TOAPANTA"},
+  {curso:"Sexto Grado EGB", email:"gala.llata@hopeacademy.edu.ec", representante:"Francisco Javier", estudiante:"Gala Llata Carrion"},
+  {curso:"Sexto Grado EGB", email:"aide.maldonado@hopeacademy.edu.ec", representante:"ROSA ZOILA", estudiante:"AIDE SARAI MALDONADO GUAMAN"},
+  {curso:"Sexto Grado EGB", email:"jose.martinez@hopeacademy.edu.ec", representante:"MARIA MONSERRATE", estudiante:"JOSE JOAQUIN MARTINEZ CARRILLO"},
+  {curso:"Sexto Grado EGB", email:"caleb.pazmiño@hopeacademy.edu.ec", representante:"MONICA JANETH", estudiante:"Caleb Enoc Pazmiño Cabascango"},
+  {curso:"Sexto Grado EGB", email:"jose.quimbiamba@hopeacademy.edu.ec", representante:"Cachipuendo Cacuango", estudiante:"JOSE ADRIAN QUIMBIAMBA CACHIPUENDO"},
+  {curso:"Sexto Grado EGB", email:"eduar.quishpe@hopeacademy.edu.ec", representante:"JULISA MARICELA", estudiante:"EDUAR ABEL QUISHPE LOPEZ"},
+  {curso:"Sexto Grado EGB", email:"jordan.reina@hopeacademy.edu.ec", representante:"GLADYS KARINA", estudiante:"JORDAN GABRIEL REINA CORTEZ"},
+  {curso:"Sexto Grado EGB", email:"lia.sandoval@hopeacademy.edu.ec", representante:"SILVANA MISHELL", estudiante:"LIA VICTORIA SANDOVAL TORRES"},
+  {curso:"Sexto Grado EGB", email:"sara.simba@hopeacademy.edu.ec", representante:"YAZMIN ANDREA", estudiante:"SARA LUCIA SIMBA BELLO"},
+  {curso:"Sexto Grado EGB", email:"scarlett.simbana@hopeacademy.edu.ec", representante:"Karol Dayana", estudiante:"Scarlett Sarahi SIMBA BELLO"},
+  {curso:"Sexto Grado EGB", email:"ayelen.ushina@hopeacademy.edu.ec", representante:"Tan墨a alexandra", estudiante:"Ayelen Kataleya UshiNa Morocho"},
+  {curso:"Sexto Grado EGB", email:"valentina.zambrano@hopeacademy.edu.ec", representante:"Pamela Stefanie", estudiante:"Valentina Sofia Zambrano Jaramillo"},
+  {curso:"Séptimo Grado EGB", email:"abel.alvarado@hopeacademy.edu.ec", representante:"GLADYS KARINA", estudiante:"ABEL MATEO ALVARADO GREFA"},
+  {curso:"Séptimo Grado EGB", email:"angel.alvarado@hopeacademy.edu.ec", representante:"GLADYS KARINA", estudiante:"ANGEL LUIS ALVARADO GREFA"},
+  {curso:"Séptimo Grado EGB", email:"valeria.buitron@hopeacademy.edu.ec", representante:"DARWIN GERARDO", estudiante:"VALERIA YAMILETH BUITRON CHONTASI"},
+  {curso:"Séptimo Grado EGB", email:"isis.charcopa@hopeacademy.edu.ec", representante:"MIRIAM ANABEL", estudiante:"ISIS ALEJANDRA CHARCOPA MANANGON"},
+  {curso:"Séptimo Grado EGB", email:"karla.cuascota@hopeacademy.edu.ec", representante:"GLADYS KARINA", estudiante:"KARLA MABEL CUASCOTA NUÑEZ"},
+  {curso:"Séptimo Grado EGB", email:"diana.gualavisi@hopeacademy.edu.ec", representante:"GLADYS KARINA", estudiante:"DIANA MARISOL GUALAVISI SANCHIMA"},
+  {curso:"Séptimo Grado EGB", email:"beatriz.hernandez@hopeacademy.edu.ec", representante:"GLADYS KARINA", estudiante:"BEATRIZ MARGRETH HERNANDEZ GUERRA"},
+  {curso:"Séptimo Grado EGB", email:"jostin.pena@hopeacademy.edu.ec", representante:"Kerly Jazmin", estudiante:"Jostin Sebastian PeNa Guachamin"},
+  {curso:"Séptimo Grado EGB", email:"elsa.aviles@hopeacademy.edu.ec", representante:"", estudiante:"ELSA MAYURI AVILES TAPUY"},
+  {curso:"Séptimo Grado EGB", email:"isell.tene@hopeacademy.edu.ec", representante:"GLADYS KARINA", estudiante:"Isell Alejandra Tene Baño"},
+  {curso:"Séptimo Grado EGB", email:"emily.ulcuango@hopeacademy.edu.ec", representante:"MARCO JAVIER", estudiante:"EMILY SARAHI ULCUANGO GUACAN"},
+  {curso:"Séptimo Grado EGB", email:"isabella.villarreal@hopeacademy.edu.ec", representante:"SONIA ISABEL", estudiante:"ISABELLA AMELI VILLARREAL PILCO"},
+  {curso:"Séptimo Grado EGB", email:"guido.wiakach@hopeacademy.edu.ec", representante:"GLADYS KARINA", estudiante:"GUIDO MAYCOL WIAKACH SHARIAN"},
+  {curso:"Octavo Grado EGB", email:"jhuliana.catucuago@hopeacademy.edu.ec", representante:"MARÍA CECILIA", estudiante:"JHULIANA AZUCENA CATUCUAGO FERNANDEZ"},
+  {curso:"Octavo Grado EGB", email:"joan.gordon@hopeacademy.edu.ec", representante:"JENNY ELIZABETH", estudiante:"JOAN ADAN GORDON ANDRANGO"},
+  {curso:"Octavo Grado EGB", email:"alejandro.guevara@hopeacademy.edu.ec", representante:"LADY DIANA", estudiante:"ALEJANDRO SEBASTIAN GUEVARA CISNEROS"},
+  {curso:"Octavo Grado EGB", email:"joaquin.lovato@hopeacademy.edu.ec", representante:"Esteban Orlando", estudiante:"JoaquIn Esteban Lovato Cruz"},
+  {curso:"Octavo Grado EGB", email:"renata.maldonado@hopeacademy.edu.ec", representante:"FRANCIS LILIAN", estudiante:"RENATA MALDONADO ORTEGA"},
+  {curso:"Octavo Grado EGB", email:"sara.meneses@hopeacademy.edu.ec", representante:"ANA MARCELA", estudiante:"SARA ISABELLA MENESES OROZCO"},
+  {curso:"Octavo Grado EGB", email:"aline.pambi@hopeacademy.edu.ec", representante:"NEPTALI XAVIER", estudiante:"ALINE VALENTINA PAMBI AUCAPIÑA"},
+  {curso:"Octavo Grado EGB", email:"diana.quimbiamba@hopeacademy.edu.ec", representante:"MARIA GLADYS", estudiante:"DIANA ELIZABETH QUIMBIAMBA GUASGUA"},
+  {curso:"Octavo Grado EGB", email:"maria.quishpe@hopeacademy.edu.ec", representante:"JAQUELINE ELIZABETH", estudiante:"MARIA JOSE QUISHPE CAMPUES"},
+  {curso:"Octavo Grado EGB", email:"stefano.sanchez@hopeacademy.edu.ec", representante:"ANA BEATRIZ", estudiante:"STEFANO LENIN SANCHEZ PEÑARRIETA"},
+  {curso:"Octavo Grado EGB", email:"ignacio.terán@hopeacademy.edu.ec", representante:"Danilo Alfredo", estudiante:"Ignacio Samuel Terán Fernández"},
+  {curso:"Octavo Grado EGB", email:"gael.valencia@hopeacademy.edu.ec", representante:"GLADYS KARINA", estudiante:"Gael Antonio Valencia Baño"},
+  {curso:"Octavo Grado EGB", email:"renato.viteri@hopeacademy.edu.ec", representante:"ALEXANDRA ARACELY", estudiante:"RENATO VITERI BENITEZ"},
+  {curso:"Noveno Grado EGB", email:"matias.aguas@hopeacademy.edu.ec", representante:"SILVIA MARIBEL", estudiante:"MATIAS KEILETH AGUAS CRIOLLO"},
+  {curso:"Noveno Grado EGB", email:"alice.arias@hopeacademy.edu.ec", representante:"Tania Pamela", estudiante:"Alice Yuliana Arias Loor"},
+  {curso:"Noveno Grado EGB", email:"raymond.collaguazo@hopeacademy.edu.ec", representante:"Shanice Joyce", estudiante:"Raymond Armando Collaguazo Lara"},
+  {curso:"Noveno Grado EGB", email:"anahi.cuascota@hopeacademy.edu.ec", representante:"GLADYS KARINA", estudiante:"ANAHI CUASCOTA NUÑEZ"},
+  {curso:"Noveno Grado EGB", email:"pablo.espinoza@hopeacademy.edu.ec", representante:"GLADYS KARINA", estudiante:"PABLO EZEQUIEL ESPINOZA TINILLO"},
+  {curso:"Noveno Grado EGB", email:"jake.govea@hopeacademy.edu.ec", representante:"JESSY ALEXANDRA", estudiante:"JAKE SANDER GOVEA MINA"},
+  {curso:"Noveno Grado EGB", email:"cristina.jacome@hopeacademy.edu.ec", representante:"GLADYS KARINA", estudiante:"CRISTINA JAMILETH JACOME MINAGUA"},
+  {curso:"Noveno Grado EGB", email:"eva.jimenez@hopeacademy.edu.ec", representante:"KARINA MARIBEL", estudiante:"EVA JAKELINE JIMENEZ USHIÑA"},
+  {curso:"Noveno Grado EGB", email:"diana.lita@hopeacademy.edu.ec", representante:"STEPHANIE CAROLINA", estudiante:"DIANA SOFIA LITA BASTIDAS"},
+  {curso:"Noveno Grado EGB", email:"sara.pazmiño@hopeacademy.edu.ec", representante:"CARLA PATRICIA", estudiante:"SARA MARISOL PAZMIÑO NARANJO"},
+  {curso:"Noveno Grado EGB", email:"viannca.rivera@hopeacademy.edu.ec", representante:"MAIRA MAGDALENA", estudiante:"VIANNCA PAULETH RIVERA MURILLO"},
+  {curso:"Noveno Grado EGB", email:"stefano.rivera@hopeacademy.edu.ec", representante:"LUIS HERNÁN", estudiante:"STEFANO DIDIER RIVERA ZURITA"},
+  {curso:"Noveno Grado EGB", email:"jeremy.rodríguez@hopeacademy.edu.ec", representante:"GLADYS KARINA", estudiante:"JEREMY CÉSAR RODRÍGUEZ CALERO"},
+  {curso:"Noveno Grado EGB", email:"maximiliano.sanchez@hopeacademy.edu.ec", representante:"Jorge Ricardo", estudiante:"MAXIMILIANO JOEL SANCHEZ CUZCO"},
+  {curso:"Noveno Grado EGB", email:"widy.sanchima@hopeacademy.edu.ec", representante:"GLADYS KARINA", estudiante:"WIDY SILVERIO SANCHIMA TANGAMASI"},
+  {curso:"Noveno Grado EGB", email:"allisson.sichique@hopeacademy.edu.ec", representante:"STIVEN EDUARDO", estudiante:"ALLISSON SOFIA SICHIQUE MACAS"},
+  {curso:"Noveno Grado EGB", email:"diego.torres@hopeacademy.edu.ec", representante:"JUAN CARLOS", estudiante:"DIEGO MAXIMILIANO TORRES GARCIA"},
+  {curso:"Noveno Grado EGB", email:"samuel.valladares@hopeacademy.edu.ec", representante:"EVELYN MARIA", estudiante:"SAMUEL NICOLAS VALLADARES ALVEAR"},
+  {curso:"Noveno Grado EGB", email:"isabella.villamil@hopeacademy.edu.ec", representante:"Yohana Amparo", estudiante:"Isabella Villamil Villamil Rodriguez"},
+  {curso:"Noveno Grado EGB", email:"daniela.wiakach@hopeacademy.edu.ec", representante:"GLADYS KARINA", estudiante:"DANIELA ELIZABETH WIAKACH SHARIAN"},
+  {curso:"Décimo Grado EGB", email:"emily.anguasha@hopeacademy.edu.ec", representante:"MICHELLE VANESSA", estudiante:"EMILY NICOLLE ANGUASHA TORRES"},
+  {curso:"Décimo Grado EGB", email:"alejandro.cabascango@hopeacademy.edu.ec", representante:"MARIA LUCILA", estudiante:"ALEJANDRO NICOLAS CABASCANGO FERNANDEZ"},
+  {curso:"Décimo Grado EGB", email:"mario.castro@hopeacademy.edu.ec", representante:"", estudiante:"MARIO JOAQUIN CASTRO VILLALBA"},
+  {curso:"Décimo Grado EGB", email:"juan.cacoango@hopeacademy.edu.ec", representante:"JUAN MANUEL", estudiante:"JUAN DAVID CACOANGO LECHON"},
+  {curso:"Décimo Grado EGB", email:"luna.chavez@hopeacademy.edu.ec", representante:"WENDY INES", estudiante:"LUNA ANTONELLA CHAVEZ PASPUEZAN"},
+  {curso:"Décimo Grado EGB", email:"andy.cuascota@hopeacademy.edu.ec", representante:"GLADYS KARINA", estudiante:"ANDY MATEO CUASCOTA NUÑEZ"},
+  {curso:"Décimo Grado EGB", email:"francisco.escobar@hopeacademy.edu.ec", representante:"BEATRIZ IRENE", estudiante:"FRANCISCO JOAQUIN ESCOBAR RIVERA"},
+  {curso:"Décimo Grado EGB", email:"camilo.lita@hopeacademy.edu.ec", representante:"STEPHANIE CAROLINA", estudiante:"CAMILO SEBASTIAN LITA BASTIDAS"},
+  {curso:"Décimo Grado EGB", email:"joaquin.paz@hopeacademy.edu.ec", representante:"Veronica Monserrath", estudiante:"Joaquin Gabriel Paz Cárdenas"},
+  {curso:"Décimo Grado EGB", email:"christopher.pulla@hopeacademy.edu.ec", representante:"Otilia Genoveva", estudiante:"Christopher Israel Pulla Altafulla"},
+  {curso:"Décimo Grado EGB", email:"antonella.saenz@hopeacademy.edu.ec", representante:"OLMEDO ESTRELLA", estudiante:"Antonella SAenz Olmedo"},
+  {curso:"Décimo Grado EGB", email:"esteban.salcedo@hopeacademy.edu.ec", representante:"EVELYN ALEXANDRA", estudiante:"ESTEBAN NICOLAS SALCEDO ARMAS"},
+  {curso:"Décimo Grado EGB", email:"naomi.sanipatin@hopeacademy.edu.ec", representante:"Irene Rivera", estudiante:"NAOMI BELEN SANIPATIN ARIAS"},
+  {curso:"Décimo Grado EGB", email:"paulina.solis@hopeacademy.edu.ec", representante:"JUAN DIEGO", estudiante:"PAULINA SOLIS MORALES"},
+  {curso:"Décimo Grado EGB", email:"doris.wiakach@hopeacademy.edu.ec", representante:"GLADYS KARINA", estudiante:"DORIS DAYRA WIAKACH SHARIAN"},
+  {curso:"Primer Curso A - Bachillerato", email:"nikolas.arebalo@hopeacademy.edu.ec", representante:"FERNANDO SEBASTIAN", estudiante:"NIKOLAS AREBALO CABEZAS"},
+  {curso:"Primer Curso A - Bachillerato", email:"joaquin.arebalo@hopeacademy.edu.ec", representante:"PAULO ANDRES", estudiante:"JOAQUIN ANDRÉS AREBALO NOVOA"},
+  {curso:"Primer Curso A - Bachillerato", email:"domenica.arévalo@hopeacademy.edu.ec", representante:"Mercedes Piedad", estudiante:"Domenica Camila Arévalo Imba"},
+  {curso:"Primer Curso A - Bachillerato", email:"joselyn.cabascango@hopeacademy.edu.ec", representante:"ERLINDA AMERICA", estudiante:"JOSELYN AMERICA CABASCANGO ORTEGA"},
+  {curso:"Primer Curso A - Bachillerato", email:"ismael.cacuango@hopeacademy.edu.ec", representante:"MARÍA ROSA", estudiante:"ISMAEL LEONARDO CACUANGO CABASCANGO"},
+  {curso:"Primer Curso A - Bachillerato", email:"eydan.calero@hopeacademy.edu.ec", representante:"GLADYS KARINA", estudiante:"EYDAN ALESSANDRO CALERO ROMO"},
+  {curso:"Primer Curso A - Bachillerato", email:"marcos.davila@hopeacademy.edu.ec", representante:"Daniel Adolfo", estudiante:"Marcos Eduardo DAvila Fuel"},
+  {curso:"Primer Curso A - Bachillerato", email:"benjamin.escobar@hopeacademy.edu.ec", representante:"BEATRIZ IRENE", estudiante:"BENJAMIN JOSUE ESCOBAR RIVERA"},
+  {curso:"Primer Curso A - Bachillerato", email:"adriana.espinoza@hopeacademy.edu.ec", representante:"GLADYS KARINA", estudiante:"ADRIANA ABIGAIL ESPINOZA TINILLO"},
+  {curso:"Primer Curso A - Bachillerato", email:"mikaela.jacome@hopeacademy.edu.ec", representante:"GLADYS KARINA", estudiante:"MIKAELA ESTEFANIA JACOME MINAGUA"},
+  {curso:"Primer Curso A - Bachillerato", email:"sady.molina@hopeacademy.edu.ec", representante:"MANUELA ALICIA", estudiante:"SADY MICAELA MOLINA ESPINOSA"},
+  {curso:"Primer Curso A - Bachillerato", email:"erick.moran@hopeacademy.edu.ec", representante:"ALEXANDRA KARINA", estudiante:"ERICK JOSUE MORAN GONZALEZ"},
+  {curso:"Primer Curso A - Bachillerato", email:"vanessa.muzo@hopeacademy.edu.ec", representante:"CARLOS", estudiante:"VANESSA ALEJANDRA MUZO VALLADARES"},
+  {curso:"Primer Curso A - Bachillerato", email:"miley.pulamarin@hopeacademy.edu.ec", representante:"VICKY ALEXANDRA", estudiante:"MILEY YAMILE PULAMARIN MONTENEGRO"},
+  {curso:"Primer Curso A - Bachillerato", email:"addison.reeger@hopeacademy.edu.ec", representante:"GLADYS KARINA", estudiante:"ADDISON ELIESE REEGER REEGER"},
+  {curso:"Primer Curso A - Bachillerato", email:"camila.salazar@hopeacademy.edu.ec", representante:"Patricia Elizabeth", estudiante:"CAMILA ALEJANDRA SALAZAR AYALA"},
+  {curso:"Primer Curso A - Bachillerato", email:"julian.ulcuango@hopeacademy.edu.ec", representante:"MARCO JAVIER", estudiante:"JULIAN JOSUE ULCUANGO GUACAN"},
+  {curso:"Segundo Curso A - Bachillerato", email:"esther.diaz@hopeacademy.edu.ec", representante:"RAFAEL SANTIAGO", estudiante:"ESTHER JULIETA DIAZ ALCIVAR"},
+  {curso:"Segundo Curso A - Bachillerato", email:"camila.guerrero@hopeacademy.edu.ec", representante:"MYRIAN FERNANDA", estudiante:"CAMILA EDUARDA GUERRERO AVILES"},
+  {curso:"Segundo Curso A - Bachillerato", email:"juliana.marroquin@hopeacademy.edu.ec", representante:"SEGUNDO JULIÁN", estudiante:"JULIANA ABIGAIL MARROQUIN SIMBAÑA"},
+  {curso:"Segundo Curso A - Bachillerato", email:"karen.molina@hopeacademy.edu.ec", representante:"GLADYS KARINA", estudiante:"Karen Jalitza Molina Mamallacta"},
+  {curso:"Segundo Curso A - Bachillerato", email:"abigail.munoz@hopeacademy.edu.ec", representante:"FERNANDA VERONICA", estudiante:"ABIGAIL MUNOZ GUAMA"},
+  {curso:"Segundo Curso A - Bachillerato", email:"karoline.navarrete@hopeacademy.edu.ec", representante:"Kevin Bryan", estudiante:"Karoline Samantha Navarrete Pazmiño"},
+  {curso:"Segundo Curso A - Bachillerato", email:"enma.papa@hopeacademy.edu.ec", representante:"GLADYS KARINA", estudiante:"ENMA ROSALIA PAPA DAGUAY"},
+  {curso:"Segundo Curso A - Bachillerato", email:"samael.valladares@hopeacademy.edu.ec", representante:"SANTIAGO AUGUSTO", estudiante:"Samael Valladares Jarrín"},
+  {curso:"Segundo Curso A - Bachillerato", email:"bi.yao@hopeacademy.edu.ec", representante:"HUANG XIAOMEI", estudiante:"BI SHENG YAO HUANG"},
+  {curso:"Segundo Curso A - Bachillerato", email:"esteban.yecao@hopeacademy.edu.ec", representante:"ZHUO TAO", estudiante:"ESTEBAN YECAO"},
+  {curso:"Tercer Curso A - Bachillerato", email:"clinton.abston@hopeacademy.edu.ec", representante:"Andrea Belen", estudiante:"CLINTON ABSTON SILVA"},
+  {curso:"Tercer Curso A - Bachillerato", email:"karol.cuascota@hopeacademy.edu.ec", representante:"Maria Julia", estudiante:"Karol Fernanda Cuascota Castillo"},
+  {curso:"Tercer Curso A - Bachillerato", email:"kory.cuascota@hopeacademy.edu.ec", representante:"GLADYS KARINA", estudiante:"KORY ANTONELA CUASCOTA NUÑEZ"},
+  {curso:"Tercer Curso A - Bachillerato", email:"dheibid.demera@hopeacademy.edu.ec", representante:"Yajaira Marilin", estudiante:"Dheibid Jhoao Demera Galarraga"},
+  {curso:"Tercer Curso A - Bachillerato", email:"yuliana.hernandez@hopeacademy.edu.ec", representante:"MARAIA CONSUELO", estudiante:"YULIANA ANAHI HERNANDEZ AGUILAR"},
+  {curso:"Tercer Curso A - Bachillerato", email:"dayana.maldonado@hopeacademy.edu.ec", representante:"Zoila Mercedes", estudiante:"Dayana Camila Maldonado Robayo"},
+  {curso:"Tercer Curso A - Bachillerato", email:"rajinder.manangon@hopeacademy.edu.ec", representante:"GUILLERMO PATRICIO", estudiante:"RAJINDER ALEJANDRO MANANGON FREIRE"},
+  {curso:"Tercer Curso A - Bachillerato", email:"alexander.ramos@hopeacademy.edu.ec", representante:"Vivíana Elizabeth", estudiante:"ALEXANDER RAMOS CHAVEZ"},
+  {curso:"Tercer Curso A - Bachillerato", email:"blanca.sanchima@hopeacademy.edu.ec", representante:"GLADYS KARINA", estudiante:"BLANCA AZUCENA SANCHIMA TANGAMASHI"},
+  {curso:"Tercer Curso A - Bachillerato", email:"sofia.tene@hopeacademy.edu.ec", representante:"GLADYS KARINA", estudiante:"Sofia Tene Baño"},
+  {curso:"Tercer Curso A - Bachillerato", email:"pablo.torres@hopeacademy.edu.ec", representante:"Lorena Elizabeth", estudiante:"Pablo Andre Torres Albuja"},
+  {curso:"Tercer Curso A - Bachillerato", email:"mateo.zambrano@hopeacademy.edu.ec", representante:"JULIO JAVIER", estudiante:"MATEO JAVIER ZAMBRANO VACA"}
+];
 
-                        // Construir objeto
-                        const obs = {
-                            observer: form.observador.value,
-                            teacher: form.docente.value,
-                            date: form.fecha.value,
-                            course: form.curso.value,
-                            subject: form.materia.value,
-                            theme: form.tema.value,
-                            methodology: form.metodologia.value,
-                            ratings: ratings,
-                            feedback: {
-                                strengths: form.fortalezas.value,
-                                improvements: form.mejorar.value,
-                                recommendations: form.recomendaciones.value
-                            },
-                            createdAt: new Date().toISOString() // Para ordenar (cliente)
-                        };
+/* ============================================================
+   4) FORMULARIO
+   ============================================================ */
+const cursoSel = document.getElementById("curso");
+const estudianteSel = document.getElementById("estudiante");
+const repHint = document.getElementById("repHint");
+const form = document.getElementById("surveyForm");
+const submitBtn = document.getElementById("submitBtn");
+const errorMsg = document.getElementById("errorMsg");
+const thankyou = document.getElementById("thankyou");
 
-                        // Guardar en Firestore
-                        await window.firebaseAddDoc(
-                            window.firebaseCollection(window.firebaseDB, "observaciones"),
-                            { ...obs, createdAtServer: window.firebaseServerTimestamp() }
-                        );
+ORDEN_CURSOS.forEach(c => {
+  const opt = document.createElement("option");
+  opt.value = c; opt.textContent = c;
+  cursoSel.appendChild(opt);
+});
 
-                        showNotification('✅ Observación guardada en la nube');
-                        form.reset();
-                        setInitialDate();
-                        document.querySelectorAll('.rating-pill').forEach(p => p.classList.remove('active', 'active-no'));
-                        loadObservations();
-                    } catch (error) {
-                        console.error(error);
-                        showNotification('❌ Error al guardar: ' + error.message, 'error');
-                    } finally {
-                        if (submitBtn) submitBtn.disabled = false;
-                    }
-                });
-            }
+cursoSel.addEventListener("change", () => {
+  const curso = cursoSel.value;
+  estudianteSel.innerHTML = ""; repHint.textContent = "";
+  if (!curso) {
+    estudianteSel.disabled = true;
+    estudianteSel.innerHTML = '<option value="">— Primero seleccione un curso —</option>';
+    return;
+  }
+  const filtrados = estudiantes.filter(e => e.curso === curso);
+  estudianteSel.disabled = false;
+  estudianteSel.innerHTML = '<option value="">— Seleccione el estudiante —</option>';
+  filtrados.forEach((e, i) => {
+    const opt = document.createElement("option");
+    opt.value = i; opt.textContent = e.estudiante;
+    estudianteSel.appendChild(opt);
+  });
+  estudianteSel._filtrados = filtrados;
+});
 
-            // --- CARGAR OBSERVACIONES (FIREBASE) ---
-            async function loadObservations() {
-                const list = document.getElementById('observations-list');
-                const badge = document.getElementById('count-badge');
-                if (!list) return;
+estudianteSel.addEventListener("change", () => {
+  const idx = estudianteSel.value;
+  if (idx === "") { repHint.textContent = ""; return; }
+  const est = estudianteSel._filtrados[idx];
+  repHint.textContent = est.representante
+    ? `Representante: ${est.representante} · Correo: ${est.email}`
+    : `Correo: ${est.email}`;
+});
 
-                showLoading(true);
-                try {
-                    // Consultar Firestore ordenado por fecha
-                    const q = window.firebaseQuery(
-                        window.firebaseCollection(window.firebaseDB, "observaciones"),
-                        window.firebaseOrderBy("createdAt", "desc")
-                    );
-                    const querySnapshot = await window.firebaseGetDocs(q);
-                    const saved = [];
-                    querySnapshot.forEach((doc) => {
-                        saved.push({ id: doc.id, ...doc.data() });
-                    });
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  errorMsg.classList.remove("show");
+  const curso = cursoSel.value;
+  const idx = estudianteSel.value;
+  if (!curso || idx === "") { mostrarError("Por favor seleccione el curso y el estudiante."); return; }
+  const est = estudianteSel._filtrados[idx];
+  const p1 = form.querySelector('input[name="p1"]:checked');
+  const p2 = form.querySelector('input[name="p2"]:checked');
+  if (!p1 || !p2) { mostrarError("Por favor responda las preguntas 1 y 2."); return; }
 
-                    if (badge) badge.textContent = saved.length;
+  const data = {
+    curso: curso,
+    estudiante: est.estudiante,
+    emailEstudiante: est.email,
+    representante: est.representante || "",
+    p1_bienestar: parseInt(p1.value, 10),
+    p2_atencion: p2.value,
+    p2_sugerencia: document.getElementById("p2_sugerencia").value.trim(),
+    p3_ayuda: document.getElementById("p3").value.trim(),
+    fecha: firebase.firestore.FieldValue.serverTimestamp()
+  };
 
-                    if (saved.length === 0) {
-                        list.innerHTML = `
-                            <div class="text-center py-12 bg-white/50 rounded-3xl backdrop-blur-sm border border-white/30">
-                                <i class="fas fa-inbox text-5xl block mb-3 text-slate-300"></i>
-                                <p class="text-slate-500">No hay observaciones guardadas.</p>
-                            </div>
-                        `;
-                        return;
-                    }
+  submitBtn.disabled = true; submitBtn.textContent = "Enviando...";
+  try {
+    await db.collection("encuestas_hope").add(data);
+    form.style.display = "none";
+    thankyou.classList.add("show");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    cargarDatos();
+  } catch (err) {
+    console.error(err);
+    mostrarError("Ocurrió un error al guardar. Intente nuevamente. " + err.message);
+    submitBtn.disabled = false; submitBtn.textContent = "Enviar Encuesta";
+  }
+});
 
-                    list.innerHTML = '';
-                    saved.forEach(obs => {
-                        const card = document.createElement('div');
-                        card.className = 'observation-card p-5 transition-all';
-                        card.innerHTML = `
-                            <div class="flex flex-wrap items-center justify-between gap-3">
-                                <div>
-                                    <div class="flex items-center gap-2 flex-wrap">
-                                        <span class="font-bold text-lg text-slate-800">${obs.teacher}</span>
-                                        <span class="text-sm bg-sky-100 text-sky-700 px-3 py-0.5 rounded-full">${obs.subject}</span>
-                                        <span class="text-sm text-slate-500">${obs.course}</span>
-                                    </div>
-                                    <div class="text-sm text-slate-500 mt-1 flex items-center gap-2 flex-wrap">
-                                        <span><i class="fas fa-user-edit mr-1"></i> Observador: ${obs.observer}</span>
-                                        <span><i class="fas fa-calendar-alt mr-1"></i> ${obs.date}</span>
-                                    </div>
-                                </div>
-                                <div class="flex gap-2">
-                                    <button class="details-btn text-sm"><i class="fas fa-chevron-down mr-1"></i> Ver detalles</button>
-                                    <button class="delete-btn text-sm bg-red-50 text-red-500 hover:bg-red-500 hover:text-white px-4 py-2 rounded-full transition" data-id="${obs.id}">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="details-content mt-4 border-t border-slate-100 pt-4 hidden">
-                                <p><span class="font-semibold">Tema:</span> ${obs.theme || 'No especificado'}</p>
-                                <p class="mt-1"><span class="font-semibold">Metodología:</span> ${obs.methodology || 'No especificada'}</p>
-                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-3">
-                                    <div class="bg-emerald-50 p-3 rounded-xl"><span class="font-bold text-emerald-700">Fortalezas</span><p class="text-sm mt-1">${obs.feedback?.strengths || '—'}</p></div>
-                                    <div class="bg-amber-50 p-3 rounded-xl"><span class="font-bold text-amber-700">A mejorar</span><p class="text-sm mt-1">${obs.feedback?.improvements || '—'}</p></div>
-                                    <div class="bg-blue-50 p-3 rounded-xl"><span class="font-bold text-blue-700">Recomendaciones</span><p class="text-sm mt-1">${obs.feedback?.recommendations || '—'}</p></div>
-                                </div>
-                            </div>
-                        `;
-                        list.appendChild(card);
-                    });
-                } catch (error) {
-                    console.error("Error cargando observaciones:", error);
-                    list.innerHTML = `<p class="text-center text-red-500 py-8">Error al cargar datos. Verifica tu conexión.</p>`;
-                } finally {
-                    showLoading(false);
-                }
-            }
+function mostrarError(msg) {
+  errorMsg.textContent = msg;
+  errorMsg.classList.add("show");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
 
-            // --- TOGGLE DETALLES ---
-            document.addEventListener('click', (e) => {
-                const btn = e.target.closest('.details-btn');
-                if (btn) {
-                    const card = btn.closest('.observation-card');
-                    const content = card.querySelector('.details-content');
-                    content.classList.toggle('hidden');
-                    btn.innerHTML = content.classList.contains('hidden') ? '<i class="fas fa-chevron-down mr-1"></i> Ver detalles' : '<i class="fas fa-chevron-up mr-1"></i> Ocultar detalles';
-                }
+function resetForm() {
+  form.reset();
+  form.style.display = "block";
+  thankyou.classList.remove("show");
+  estudianteSel.disabled = true;
+  estudianteSel.innerHTML = '<option value="">— Primero seleccione un curso —</option>';
+  repHint.textContent = "";
+  submitBtn.disabled = false; submitBtn.textContent = "Enviar Encuesta";
+  errorMsg.classList.remove("show");
+}
 
-                // --- ELIMINAR OBSERVACIÓN ---
-                const delBtn = e.target.closest('.delete-btn');
-                if (delBtn) {
-                    const id = delBtn.dataset.id;
-                    if (confirm('¿Estás seguro de eliminar esta observación? Esta acción no se puede deshacer.')) {
-                        (async () => {
-                            try {
-                                await window.firebaseDeleteDoc(window.firebaseDoc(window.firebaseDB, "observaciones", id));
-                                showNotification('🗑️ Observación eliminada');
-                                loadObservations();
-                            } catch (error) {
-                                console.error(error);
-                                showNotification('❌ Error al eliminar', 'error');
-                            }
-                        })();
-                    }
-                }
-            });
+/* ============================================================
+   5) PANEL DE RESULTADOS
+   ============================================================ */
+let datos = [];
 
-            // --- EXPORTAR EXCEL ---
-            const excelBtn = document.getElementById('download-excel-btn');
-            if (excelBtn) {
-                excelBtn.addEventListener('click', async () => {
-                    try {
-                        showLoading(true);
-                        const querySnapshot = await window.firebaseGetDocs(
-                            window.firebaseCollection(window.firebaseDB, "observaciones")
-                        );
-                        const saved = [];
-                        querySnapshot.forEach((doc) => {
-                            saved.push({ id: doc.id, ...doc.data() });
-                        });
+async function cargarDatos() {
+  const tbody = document.getElementById("tbody");
+  tbody.innerHTML = '<tr><td colspan="10" class="loading">Cargando datos...</td></tr>';
+  try {
+    const snap = await db.collection("encuestas_hope").orderBy("fecha", "desc").get();
+    datos = [];
+    snap.forEach(doc => datos.push({ id: doc.id, ...doc.data() }));
+    llenarFiltroCursos();
+    renderStats();
+    renderTabla();
+  } catch (err) {
+    console.error(err);
+    tbody.innerHTML = `<tr><td colspan="10" class="loading" style="color:var(--danger);">Error: ${err.message}</td></tr>`;
+  }
+}
 
-                        if (saved.length === 0) {
-                            showNotification('No hay observaciones para exportar', 'error');
-                            return;
-                        }
+function llenarFiltroCursos() {
+  const sel = document.getElementById("filtroCurso");
+  const valorActual = sel.value;
+  sel.innerHTML = '<option value="">Todos los cursos</option>';
+  ORDEN_CURSOS.forEach(c => {
+    const opt = document.createElement("option");
+    opt.value = c; opt.textContent = c;
+    sel.appendChild(opt);
+  });
+  sel.value = valorActual;
+}
 
-                        // Ordenar por fecha descendente
-                        saved.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+function renderStats() {
+  const total = datos.length;
+  const p1prom = total ? (datos.reduce((s, d) => s + (Number(d.p1_bienestar) || 0), 0) / total).toFixed(2) : "0.00";
+  const si = datos.filter(d => d.p2_atencion === "Sí").length;
+  const no = datos.filter(d => d.p2_atencion === "No").length;
+  document.getElementById("stats").innerHTML = `
+    <div class="stat"><div class="num">${total}</div><div class="lbl">Respuestas totales</div></div>
+    <div class="stat"><div class="num">${p1prom}</div><div class="lbl">Promedio P1 (1-5)</div></div>
+    <div class="stat"><div class="num">${si}</div><div class="lbl">P2 — Sí</div></div>
+    <div class="stat"><div class="num">${no}</div><div class="lbl">P2 — No</div></div>
+  `;
+}
 
-                        const data = [];
-                        saved.forEach(obs => {
-                            const row = {
-                                'Observador': obs.observer,
-                                'Docente': obs.teacher,
-                                'Fecha': obs.date,
-                                'Curso': obs.course,
-                                'Materia': obs.subject,
-                                'Tema': obs.theme,
-                                'Metodología': obs.methodology,
-                                'Fortalezas': obs.feedback?.strengths || '',
-                                'Aspectos a mejorar': obs.feedback?.improvements || '',
-                                'Recomendaciones': obs.feedback?.recommendations || ''
-                            };
-                            if (obs.ratings) {
-                                Object.keys(obs.ratings).forEach(sectionId => {
-                                    const sec = obs.ratings[sectionId];
-                                    Object.keys(sec).forEach(critId => {
-                                        const name = getCriterionName(sectionId, critId);
-                                        row[name] = sec[critId] || 'No evaluado';
-                                    });
-                                });
-                            }
-                            data.push(row);
-                        });
+function renderTabla() {
+  const cursoFiltro = document.getElementById("filtroCurso").value;
+  const texto = document.getElementById("filtroTexto").value.toLowerCase().trim();
+  const tbody = document.getElementById("tbody");
 
-                        const ws = XLSX.utils.json_to_sheet(data);
-                        const wb = XLSX.utils.book_new();
-                        XLSX.utils.book_append_sheet(wb, ws, 'Observaciones');
-                        if (data.length) {
-                            const cols = Object.keys(data[0]).map(key => ({
-                                wch: Math.min(Math.max(key.length, ...data.map(r => String(r[key] || '').length)), 50)
-                            }));
-                            ws['!cols'] = cols;
-                        }
-                        XLSX.writeFile(wb, `observaciones_HCA_${new Date().toISOString().slice(0,10)}.xlsx`);
-                        showNotification('✅ Excel descargado correctamente');
-                    } catch (err) {
-                        console.error(err);
-                        showNotification('❌ Error al generar Excel', 'error');
-                    } finally {
-                        showLoading(false);
-                    }
-                });
-            }
+  let filtrados = datos.filter(d => {
+    if (cursoFiltro && d.curso !== cursoFiltro) return false;
+    if (texto) {
+      const blob = `${d.estudiante || ""} ${d.representante || ""} ${d.emailEstudiante || ""}`.toLowerCase();
+      if (!blob.includes(texto)) return false;
+    }
+    return true;
+  });
 
-            // --- INICIALIZAR ---
-            window.addEventListener('load', () => {
-                setTimeout(() => {
-                    loadObservations();
-                }, 800); // pequeña espera para que firebase esté listo
-            });
+  filtrados.sort((a, b) => {
+    const ia = ORDEN_CURSOS.indexOf(a.curso);
+    const ib = ORDEN_CURSOS.indexOf(b.curso);
+    if (ia !== ib) return ia - ib;
+    return (a.estudiante || "").localeCompare(b.estudiante || "");
+  });
 
-            // Refrescar cada 30 segundos (opcional, para ver cambios en vivo)
-            setInterval(() => {
-                loadObservations();
-            }, 30000);
+  if (filtrados.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="10" class="loading">No hay respuestas que coincidan.</td></tr>';
+    return;
+  }
 
-        })();
-    </script>
+  tbody.innerHTML = filtrados.map((d, i) => {
+    const fecha = d.fecha?.toDate ? d.fecha.toDate().toLocaleString("es-EC") : "—";
+    const p1 = Number(d.p1_bienestar) || 0;
+    const p2Badge = d.p2_atencion === "Sí"
+      ? '<span class="badge badge-yes">Sí</span>'
+      : '<span class="badge badge-no">No</span>';
+    const vacio = '<span class="empty-answer">—</span>';
+    return `<tr>
+      <td>${i + 1}</td>
+      <td>${esc(d.curso)}</td>
+      <td>${esc(d.estudiante)}</td>
+      <td>${esc(d.representante) || vacio}</td>
+      <td>${esc(d.emailEstudiante)}</td>
+      <td><span class="badge badge-num">${p1}</span></td>
+      <td>${p2Badge}</td>
+      <td class="cell-text">${esc(d.p2_sugerencia) || vacio}</td>
+      <td class="cell-text">${esc(d.p3_ayuda) || vacio}</td>
+      <td>${fecha}</td>
+    </tr>`;
+  }).join("");
+}
+
+function esc(s) {
+  if (s === undefined || s === null) return "";
+  return String(s)
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}
+
+/* ============================================================
+   6) DESCARGAR EXCEL
+   ============================================================ */
+function descargarExcel() {
+  if (datos.length === 0) { alert("No hay datos para descargar."); return; }
+
+  const ordenados = [...datos].sort((a, b) => {
+    const ia = ORDEN_CURSOS.indexOf(a.curso);
+    const ib = ORDEN_CURSOS.indexOf(b.curso);
+    if (ia !== ib) return ia - ib;
+    return (a.estudiante || "").localeCompare(b.estudiante || "");
+  });
+
+  const filas = ordenados.map((d, i) => ({
+    "#": i + 1,
+    "Curso": d.curso || "",
+    "Estudiante": d.estudiante || "",
+    "Representante": d.representante || "",
+    "Correo estudiante": d.emailEstudiante || "",
+    "P1 Bienestar (1-5)": Number(d.p1_bienestar) || "",
+    "P2 Atención": d.p2_atencion || "",
+    "P2 Sugerencia": d.p2_sugerencia || "",
+    "P3 Ayuda solicitada": d.p3_ayuda || "",
+    "Fecha de envío": d.fecha?.toDate ? d.fecha.toDate().toLocaleString("es-EC") : ""
+  }));
+
+  const ws = XLSX.utils.json_to_sheet(filas);
+  ws["!cols"] = [
+    { wch: 5 }, { wch: 28 }, { wch: 34 }, { wch: 24 }, { wch: 34 },
+    { wch: 16 }, { wch: 14 }, { wch: 40 }, { wch: 40 }, { wch: 22 }
+  ];
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Encuestas");
+
+  const resumen = {};
+  ordenados.forEach(d => {
+    if (!resumen[d.curso]) resumen[d.curso] = { total: 0, sumaP1: 0, si: 0, no: 0 };
+    resumen[d.curso].total++;
+    resumen[d.curso].sumaP1 += Number(d.p1_bienestar) || 0;
+    if (d.p2_atencion === "Sí") resumen[d.curso].si++;
+    if (d.p2_atencion === "No") resumen[d.curso].no++;
+  });
+  const resumenFilas = ORDEN_CURSOS
+    .filter(c => resumen[c])
+    .map(c => ({
+      "Curso": c,
+      "Total respuestas": resumen[c].total,
+      "Promedio P1": (resumen[c].sumaP1 / resumen[c].total).toFixed(2),
+      "P2 Sí": resumen[c].si,
+      "P2 No": resumen[c].no
+    }));
+  const wsResumen = XLSX.utils.json_to_sheet(resumenFilas);
+  wsResumen["!cols"] = [{ wch: 30 }, { wch: 18 }, { wch: 14 }, { wch: 10 }, { wch: 10 }];
+  XLSX.utils.book_append_sheet(wb, wsResumen, "Resumen por curso");
+
+  const fecha = new Date().toISOString().slice(0, 10);
+  XLSX.writeFile(wb, `Encuestas_Hope_Academy_${fecha}.xlsx`);
+}
+
+cargarDatos();
+</script>
 </body>
 </html>
